@@ -5,7 +5,7 @@ Nombres de los integrantes :
 
     Marco Antonio Gomez Vivar
     Andres Tamayo 
-    Fernando Guerrero
+    Víctor Fernando Guerrero Inttiago
 
 Objetivo General.
 
