@@ -1,7 +1,9 @@
-// frontend/src/App.jsx
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
+import Dashboard from './components/Dashboard';
+import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
 function App() {
@@ -13,25 +15,15 @@ function App() {
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        {/* Ruta protegida de ejemplo */}
-        <Route path="/dashboard" element={
-          isAuthenticated ? (
-            <div className="text-center mt-5">
-              <h1>Bienvenido al Panel</h1>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('token');
-                  window.location.href = '/login';
-                }}
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          ) : (
-            <Navigate to="/login" />
-          )
-        } />
+
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );
