@@ -7,16 +7,16 @@ export const register = async (req, res) => {
   const { userId, name, phone, email, password } = req.body;
 
   try {
-    // Verifica si el correo ya está registrado
+    // Verificar si el email ya está registrado
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'El correo ya está registrado' });
     }
 
-    // Hashea la contraseña
+    // Hashear contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crea y guarda el nuevo usuario
+    // Crear nuevo usuario
     const newUser = new User({
       userId,
       name,
@@ -39,19 +39,19 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Verifica si el usuario existe
+    // Buscar usuario por email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Verifica la contraseña
+    // Comparar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
-    // Genera el token JWT
+    // Generar token con los datos necesarios para el frontend
     const token = jwt.sign(
       {
         userId: user._id,
@@ -62,6 +62,7 @@ export const login = async (req, res) => {
       { expiresIn: '1h' }
     );
 
+    // Responder con token y datos del usuario
     return res.status(200).json({
       message: 'Inicio de sesión exitoso',
       token,
