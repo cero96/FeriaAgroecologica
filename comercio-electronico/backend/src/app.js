@@ -4,7 +4,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import usersRoutes from './routes/usersRoutes.js';
 import dashboardRouter from './routes/dashboardRouter.js';
-
+import morgan from 'morgan' ;
+app.use(morgan('dev'))
 
 dotenv.config();  // Carga las variables de entorno
 
