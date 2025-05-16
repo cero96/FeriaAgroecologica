@@ -1,59 +1,78 @@
-// backend/src/controllers/UsersController.js
-import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-// Simulación temporal de base de datos
-let usersDB = [];
-
+// Registro de usuario
 export const register = async (req, res) => {
-  const { userId, name, email, phone, password } = req.body;
+  const { userId, name, phone, email, password } = req.body;
 
-  const existingUser = usersDB.find(u => u.userId === userId);
-  if (existingUser) {
-    return res.status(409).json({ message: 'El usuario ya existe' });
+  try {
+    // Verifica si el correo ya está registrado
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'El correo ya está registrado' });
+    }
+
+    // Hashea la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crea y guarda el nuevo usuario
+    const newUser = new User({
+      userId,
+      name,
+      phone,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    return res.status(201).json({ message: 'Usuario registrado con éxito' });
+  } catch (error) {
+    console.error('Error en registro:', error);
+    return res.status(500).json({ message: 'Error del servidor' });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = {
-    userId,
-    name,
-    email,
-    phone,
-    password: hashedPassword,
-    role: 'user'
-  };
-
-  usersDB.push(newUser);
-  res.status(201).json({ message: 'Usuario registrado correctamente' });
 };
 
+// Inicio de sesión
 export const login = async (req, res) => {
-  const { userId, password } = req.body;
+  const { email, password } = req.body;
 
-  const user = usersDB.find(u => u.userId === userId);
-  if (!user) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ message: 'Contraseña incorrecta' });
-  }
-
-  const token = jwt.sign(
-    { userId: user.userId, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
-
-  res.json({
-    message: 'Inicio de sesión exitoso',
-    token,
-    user: {
-      userId: user.userId,
-      name: user.name,
-      email: user.email,
-      role: user.role
+  try {
+    // Verifica si el usuario existe
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
-  });
+
+    // Verifica la contraseña
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Contraseña incorrecta' });
+    }
+
+    // Genera el token JWT
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    return res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      token,
+      user: {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error('Error en login:', error);
+    return res.status(500).json({ message: 'Error del servidor' });
+  }
 };

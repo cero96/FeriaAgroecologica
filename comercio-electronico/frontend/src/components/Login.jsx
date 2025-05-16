@@ -1,68 +1,117 @@
-import { useState } from 'react'
-
-import { Form, Button, Container, Card } from 'react-bootstrap';
-import './Auth.css';
+// src/components/Login.jsx
+import React, { useState } from 'react';
 
 function Login() {
   const [formData, setFormData] = useState({
-    userId: '',
-    password: '',
+    email: '',
+    password: ''
   });
 
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' o 'danger'
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    if (!formData.email || !formData.password) {
+      setMessageType('danger');
+      setMessage('❌ Todos los campos son obligatorios');
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:3000/api/users/login', {
+      const res = await fetch('http://localhost:3000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
-  
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Inicio de sesión exitoso', data);
+
+      const data = await res.json();
+
+      if (res.ok) {
         localStorage.setItem('token', data.token);
-        // Redirigir o actualizar UI
+        setMessageType('success');
+        setMessage('✅ Inicio de sesión exitoso');
+        setTimeout(() => {
+          window.location.href = '/home';
+        }, 1000);
       } else {
-        alert(data.message);
+        setMessageType('danger');
+        setMessage(`❌ ${data.message || 'Credenciales incorrectas'}`);
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
+      console.error(error);
+      setMessageType('danger');
+      setMessage('❌ Error al conectar con el servidor');
     }
   };
-  
 
   return (
-    <div className="auth-background">
-      <Container className="d-flex justify-content-center align-items-center vh-100">
-        <Card className="p-4 shadow" style={{ maxWidth: '400px', width: '100%' }}>
-          <h2 className="text-center mb-4">Iniciar Sesión</h2>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="userId">
-              <Form.Label>ID de Usuario</Form.Label>
-              <Form.Control type="text" placeholder="Ingresa tu ID" value={formData.userId} onChange={handleChange} required />
-            </Form.Group>
+<div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+  <div className="card p-4 shadow" style={{ maxWidth: '400px', width: '100%', borderRadius: '12px', borderColor: '#2e7d32' }}>
+    <h2 className="text-center mb-4" style={{ color: '#2e7d32' }}>Iniciar Sesión</h2>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <input
+          type="email"
+          name="email"
+          className="form-control"
+          placeholder="Correo electrónico"
+          value={formData.email}
+          onChange={handleChange}
+          autoComplete="username"
+        />
+      </div>
+      <div className="mb-3">
+        <input
+          type="password"
+          name="password"
+          className="form-control"
+          placeholder="Contraseña"
+          value={formData.password}
+          onChange={handleChange}
+          autoComplete="current-password"
+        />
+      </div>
 
-            <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Contraseña</Form.Label>
-              <Form.Control type="password" placeholder="Ingresa tu contraseña" value={formData.password} onChange={handleChange} required />
-            </Form.Group>
+      <div className="d-grid gap-2">
+        <button
+          type="submit"
+          className="btn btn-success"
+          style={{ backgroundColor: '#388e3c', borderColor: '#2e7d32' }}
+        >
+          Iniciar sesión
+        </button>
 
-            <Button variant="primary" type="submit" className="w-100">
-              Iniciar Sesión
-            </Button>
-          </Form>
-          <p className="text-center mt-3">
-            ¿No tienes cuenta? <a href="/register">Regístrate</a>
-          </p>
-        </Card>
-      </Container>
-    </div>
+        <a
+          href="/register"
+          className="btn btn-outline-success"
+          style={{
+            borderColor: '#66bb6a',
+            color: '#2e7d32',
+            backgroundColor: '#e8f5e9'
+          }}
+        >
+          Registrarme
+        </a>
+      </div>
+    </form>
+
+    {message && (
+      <div className={`alert mt-3 alert-${messageType}`} role="alert">
+        {message}
+      </div>
+    )}
+  </div>
+</div>
+
   );
 }
 
