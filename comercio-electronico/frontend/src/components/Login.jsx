@@ -1,14 +1,11 @@
-// src/components/Login.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' o 'danger'
+  const [messageType, setMessageType] = useState('');
+  const navigate = useNavigate(); // <-- hook de React Router
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -40,7 +37,7 @@ function Login() {
         setMessageType('success');
         setMessage('✅ Inicio de sesión exitoso');
         setTimeout(() => {
-          window.location.href = '/home';
+          navigate('/dashboard'); // <-- redirección con React Router
         }, 1000);
       } else {
         setMessageType('danger');
@@ -54,64 +51,63 @@ function Login() {
   };
 
   return (
-<div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-  <div className="card p-4 shadow" style={{ maxWidth: '400px', width: '100%', borderRadius: '12px', borderColor: '#2e7d32' }}>
-    <h2 className="text-center mb-4" style={{ color: '#2e7d32' }}>Iniciar Sesión</h2>
-    <form onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <input
-          type="email"
-          name="email"
-          className="form-control"
-          placeholder="Correo electrónico"
-          value={formData.email}
-          onChange={handleChange}
-          autoComplete="username"
-        />
-      </div>
-      <div className="mb-3">
-        <input
-          type="password"
-          name="password"
-          className="form-control"
-          placeholder="Contraseña"
-          value={formData.password}
-          onChange={handleChange}
-          autoComplete="current-password"
-        />
-      </div>
+    <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+      <div className="card p-4 shadow" style={{ maxWidth: '400px', width: '100%', borderRadius: '12px', borderColor: '#2e7d32' }}>
+        <h2 className="text-center mb-4" style={{ color: '#2e7d32' }}>Iniciar Sesión</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <input
+              type="email"
+              name="email"
+              className="form-control"
+              placeholder="Correo electrónico"
+              value={formData.email}
+              onChange={handleChange}
+              autoComplete="username"
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="password"
+              name="password"
+              className="form-control"
+              placeholder="Contraseña"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="current-password"
+            />
+          </div>
 
-      <div className="d-grid gap-2">
-        <button
-          type="submit"
-          className="btn btn-success"
-          style={{ backgroundColor: '#388e3c', borderColor: '#2e7d32' }}
-        >
-          Iniciar sesión
-        </button>
+          <div className="d-grid gap-2">
+            <button
+              type="submit"
+              className="btn btn-success"
+              style={{ backgroundColor: '#388e3c', borderColor: '#2e7d32' }}
+            >
+              Iniciar sesión
+            </button>
 
-        <a
-          href="/register"
-          className="btn btn-outline-success"
-          style={{
-            borderColor: '#66bb6a',
-            color: '#2e7d32',
-            backgroundColor: '#e8f5e9'
-          }}
-        >
-          Registrarme
-        </a>
+            <a
+              href="/register"
+              className="btn btn-outline-success"
+              style={{
+                borderColor: '#66bb6a',
+                color: '#2e7d32',
+                backgroundColor: '#e8f5e9'
+              }}
+            >
+              Registrarme
+            </a>
+          </div>
+        </form>
+
+        {message && (
+          <div className={`alert mt-3 alert-${messageType}`} role="alert">
+            {message}
+          </div>
+        )}
       </div>
-    </form>
-
-    {message && (
-      <div className={`alert mt-3 alert-${messageType}`} role="alert">
-        {message}
-      </div>
-    )}
-  </div>
-</div>
-
+    </div>
   );
 }
 
