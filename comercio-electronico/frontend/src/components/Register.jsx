@@ -1,73 +1,75 @@
-// src/components/Register.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
-  const [formData, setFormData] = useState({
-    userId: '',
+export default function Register() {
+  const [form, setForm] = useState({
+    tenantName: '',
     name: '',
-    phone: '',
     email: '',
     password: '',
+    phone: '',
   });
-
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e) =>
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Validación básica frontend
-    if (!formData.userId || !formData.name || !formData.phone || !formData.email || !formData.password) {
-      setError('Todos los campos son obligatorios');
+    // Validaciones básicas
+    if (!form.tenantName || !form.name || !form.email || !form.password) {
+      setError('Por favor complete todos los campos obligatorios');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
       return;
     }
 
     try {
-      const response = await fetch(`${apiUrl}/users/register`, {
+      const res = await fetch(import.meta.env.VITE_API_URL + '/users/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantName: form.tenantName,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password,
+          role: 'admin', // registra admin con tenant nuevo
+        }),
       });
 
-      if (response.ok) {
+      if (res.ok) {
         navigate('/login');
       } else {
-        const data = await response.json();
-        setError(data.error || 'Error al registrarse');
+        const data = await res.json();
+        setError(data.error || 'Error al registrar usuario');
       }
     } catch (err) {
-      console.error('Error en el registro:', err);
-      setError('Error en el servidor');
+      setError('Error del servidor. Intente más tarde.');
+      console.error(err);
     }
   };
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <div className="card p-4 shadow" style={{ maxWidth: '450px', width: '100%', borderRadius: '12px', borderColor: '#4caf50' }}>
+      <div className="card p-4 shadow" style={{ maxWidth: '450px', borderRadius: '12px', borderColor: '#4caf50' }}>
         <h2 className="text-center mb-4" style={{ color: '#4caf50' }}>Registro</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <input
               type="text"
-              name="userId"
+              name="tenantName"
               className="form-control"
-              placeholder="ID de usuario"
-              value={formData.userId}
+              placeholder="Nombre de la Empresa (Tenant)"
+              value={form.tenantName}
               onChange={handleChange}
               required
+              autoFocus
             />
           </div>
           <div className="mb-3">
@@ -76,18 +78,7 @@ const Register = () => {
               name="name"
               className="form-control"
               placeholder="Nombre completo"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <input
-              type="text"
-              name="phone"
-              className="form-control"
-              placeholder="Teléfono"
-              value={formData.phone}
+              value={form.name}
               onChange={handleChange}
               required
             />
@@ -98,9 +89,20 @@ const Register = () => {
               name="email"
               className="form-control"
               placeholder="Correo electrónico"
-              value={formData.email}
+              value={form.email}
               onChange={handleChange}
               required
+              autoComplete="username"
+            />
+          </div>
+          <div className="mb-3">
+            <input
+              type="text"
+              name="phone"
+              className="form-control"
+              placeholder="Teléfono (opcional)"
+              value={form.phone}
+              onChange={handleChange}
             />
           </div>
           <div className="mb-3">
@@ -108,25 +110,20 @@ const Register = () => {
               type="password"
               name="password"
               className="form-control"
-              placeholder="Contraseña"
-              value={formData.password}
+              placeholder="Contraseña (mín 6 caracteres)"
+              value={form.password}
               onChange={handleChange}
               required
               minLength={6}
+              autoComplete="new-password"
             />
           </div>
-          <button type="submit" className="btn btn-success w-100" style={{ backgroundColor: '#4caf50', borderColor: '#388e3c' }}>
+          <button type="submit" className="btn btn-success w-100" style={{ borderColor: '#388e3c' }}>
             Registrarse
           </button>
+          {error && <div className="alert alert-danger mt-3">{error}</div>}
         </form>
-        {error && (
-          <div className="alert alert-danger mt-3" role="alert">
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );
-};
-
-export default Register;
+}

@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import usersRoutes from './routes/usersRoutes.js';
-
+import productsRouter from './routes/products.js';
 const app = express();
 
 // Middleware
@@ -18,5 +18,18 @@ app.use(cors({
 
 // Rutas
 app.use('/api/users', usersRoutes);
+app.use('/api/products', productsRouter);
+
+
+// Middleware para manejar errores generales
+app.use((err, req, res, next) => {
+  console.error('🔴 Error:', err.message);
+  console.error(err.stack);
+
+  res.status(err.status || 500).json({
+    message: err.message || 'Error interno del servidor',
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
 
 export default app;

@@ -1,10 +1,8 @@
-// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Login';
-import Register from './components/Register';
-import Dashboard from './components/Dashboard';
-import PrivateRoute from './components/PrivateRoute';
-import './App.css';
+import Login from './components/Login.jsx';
+import Register from './components/Register.jsx';
+import Dashboard from './components/Dashboard.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
 
 function App() {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -15,7 +13,6 @@ function App() {
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route
           path="/dashboard"
           element={
@@ -24,6 +21,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
