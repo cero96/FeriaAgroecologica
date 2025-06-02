@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ProductForm from './ProductForm';
+import ProductForm from '../components/ProductForm';
 import { apiFetch } from '../services/api';
 
 export default function Dashboard() {
