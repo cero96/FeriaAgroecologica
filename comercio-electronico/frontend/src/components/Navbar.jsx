@@ -12,7 +12,8 @@ const Navbar = () => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light px-4">
-      <Link className="navbar-brand" to="/">Mi App</Link>
+      <link rel="icon" type="image/svg+xml" href="../public/primero.jpg" />
+      <Link className="navbar-brand" to="/">FERIA AGROECOLOGICA</Link>
       <div className="collapse navbar-collapse">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">

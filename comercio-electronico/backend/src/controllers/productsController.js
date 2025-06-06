@@ -67,3 +67,22 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { tenantId } = req;
+
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing || existing.tenantId !== tenantId) {
+      return res.status(404).json({ error: 'Producto no encontrado o acceso denegado.' });
+    }
+
+    await prisma.product.delete({ where: { id } });
+
+    res.status(200).json({ message: 'Producto eliminado exitosamente.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+

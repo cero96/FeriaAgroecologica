@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import usersRoutes from './routes/usersRoutes.js';
 import productsRouter from './routes/products.js';
+import publicRoutes from './routes/public.js';
 const app = express();
 
 // Middleware
@@ -19,6 +20,7 @@ app.use(cors({
 // Rutas
 app.use('/api/users', usersRoutes);
 app.use('/api/products', productsRouter);
+app.use('/api/public', publicRoutes);
 
 
 // Middleware para manejar errores generales
