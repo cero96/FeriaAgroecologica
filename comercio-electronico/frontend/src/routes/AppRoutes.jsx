@@ -5,6 +5,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import PrivateRoute from '../components/PrivateRoute';
+import CartPage from '../pages/CartPage';
 
 export default function AppRoutes() {
   return (
@@ -12,6 +13,8 @@ export default function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/cart" element={<CartPage />} />
+       
       <Route
         path="/dashboard"
         element={

@@ -1,6 +1,6 @@
 // src/controllers/UsersController.js
 import prisma from '../lib/prisma.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_feria_floresta';
