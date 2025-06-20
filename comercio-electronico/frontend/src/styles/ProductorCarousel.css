@@ -1,0 +1,70 @@
+/* Estilos para la imagen */
+.custom-image {
+  max-height: 500px; /* Altura máxima de la imagen */
+  object-fit: cover; /* Mantiene la proporción de la imagen */
+  width: 50%; /* Mantiene el ancho del 50% como en el código original */
+}
+
+/* Estilos para el contenedor de texto (caption) */
+.custom-caption {
+  position: relative; /* Cambia a relativo para control preciso */
+  top: 10px; /* Espacio entre la imagen y el texto */
+  left: 0;
+  width: 50%; /* Mantiene el ancho alineado con la imagen */
+  margin: 0 auto; /* Centra el contenedor */
+  text-align: center; /* Alinea el texto al centro */
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
+  border-radius: 5px;
+  padding: 15px;
+}
+
+/* Estilos para el nombre (h5) */
+.custom-caption h5 {
+  font-size: 2rem; /* Tamaño del nombre */
+  color: #013708; /* Color blanco para contraste */
+  margin-bottom: 0.2rem; /* Espacio entre nombre y descripción */
+}
+
+/* Estilos para la descripción (p) */
+.custom-caption p {
+  font-size: 1.3rem; /* Tamaño de la descripción */
+  color: #fff; /* Color blanco para contraste */
+  margin: 0; /* Elimina márgenes adicionales */
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .custom-image {
+    max-height: 300px; /* Reduce la altura en tablets */
+    width: 70%; /* Aumenta el ancho relativo en pantallas pequeñas */
+  }
+  .custom-caption {
+    width: 70%; /* Ajusta el ancho del caption */
+    top: 5px; /* Reduce el espacio en pantallas pequeñas */
+    padding: 10px;
+  }
+  .custom-caption h5 {
+    font-size: 1.2rem;
+  }
+  .custom-caption p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-image {
+    max-height: 200px; /* Reduce aún más en móviles */
+    width: 90%; /* Ocupa casi todo el ancho */
+  }
+  .custom-caption {
+    width: 90%; /* Ajusta el ancho del caption */
+    top: 5px;
+    padding: 8px;
+  }
+  .custom-caption h5 {
+    font-size: 1rem;
+  }
+  .custom-caption p {
+    font-size: 0.8rem;
+  }
+}

@@ -6,24 +6,24 @@ const productores = [
   {
     nombre: 'María Gómez',
     descripcion: 'Productora de hortalizas orgánicas en la región andina.',
-    imagen: 'https://via.placeholder.com/600x400?text=Maria+Gomez'
+    imagen: '/Maria.jpg' 
   },
   {
-    nombre: 'Carlos Pérez',
-    descripcion: 'Apicultor especializado en miel ecológica.',
-    imagen: 'https://via.placeholder.com/600x400?text=Carlos+Perez'
+    nombre: 'Elvira Pérez',
+    descripcion: 'Productora especializada en frutas organicas.',
+    imagen: '/Elvira.jpg'
   },
   {
     nombre: 'Ana Torres',
     descripcion: 'Cultiva café de altura con prácticas sostenibles.',
-    imagen: 'https://via.placeholder.com/600x400?text=Ana+Torres'
+    imagen: '/Ana.jpg' 
   }
 ];
 
 const Productores = () => {
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4 text-success">Nuestros Productores</h2>
+      <h1 className="text-center mb-4 text-success">Nuestros Productores</h1>
       <ProductorCarousel productores={productores} />
     </div>
   );

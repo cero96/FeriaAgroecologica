@@ -1,5 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/ProductorCarousel.css';
 
 const ProductorCarousel = ({ productores }) => {
   return (
@@ -13,12 +14,11 @@ const ProductorCarousel = ({ productores }) => {
             <div className="d-flex justify-content-center">
               <img
                 src={productor.imagen}
-                className="d-block w-50 rounded shadow"
+                className="d-block w-50 rounded shadow custom-image"
                 alt={productor.nombre}
-                style={{ maxHeight: '400px', objectFit: 'cover' }}
               />
             </div>
-            <div className="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded">
+            <div className="carousel-caption d-none d-md-block bg-dark bg-opacity-50 p-3 rounded custom-caption">
               <h5>👨‍🌾 {productor.nombre}</h5>
               <p>{productor.descripcion}</p>
             </div>

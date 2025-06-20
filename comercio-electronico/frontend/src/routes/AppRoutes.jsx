@@ -7,6 +7,8 @@ import Dashboard from '../pages/Dashboard';
 import PrivateRoute from '../components/PrivateRoute';
 import CartPage from '../pages/CartPage';
 import Productores from '../pages/Productores';
+import BlogPage from '../pages/Blogs'; // Importamos BlogPage
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -15,7 +17,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/cart" element={<CartPage />} />
-       
+      <Route path="/Blogs" element={<BlogPage />} /> {/* Nueva ruta para el blog */}
       <Route
         path="/dashboard"
         element={
