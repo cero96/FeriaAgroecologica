@@ -7,11 +7,11 @@
 
 /* Estilos para el contenedor de texto (caption) */
 .custom-caption {
-  background-color: black;
+  background-color: rgba(0, 0, 0, 0.5) !important; /* Fondo oscuro con opacidad */
   position: relative;
   top: 10px;
   left: 0;
-  width: 50%;
+  width: 85% !important;
   margin: 0 auto;
   text-align: center;
   border-radius: 5px;
@@ -27,7 +27,7 @@
 
 .custom-caption p {
   font-size: 1.3rem;
-  color: #f8f9fa;
+  color: #013708;
   margin: 0;
 }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import "../styles/Blog.css";
 import Blog from '../components/Blog';
 
 const floresta = [
