@@ -10,13 +10,14 @@
   position: relative;
   top: 10px;
   left: 0;
-  width: 50%;
+  width: 80% !important;
   margin: 0 auto;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
   border-radius: 5px;
   padding: 15px;
 }
+
 
 /* Estilo del título */
 #carouselFloresta .custom-caption h5 {
@@ -32,6 +33,26 @@
   color: #013708;
   margin: 0;
 }
+
+/* Fondo negro en los botones */
+.carousel-control-prev,
+.carousel-control-next {
+  background-color: black; /* color de fondo */
+  border-radius: 50%;       /* opcional: que sea un círculo */
+  width: 40px;
+  height: 40px;
+  top: 50%;
+  transform: translateY(-80%);
+}
+
+/* Mejorar visibilidad del ícono */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1); /* invierte el ícono blanco si el fondo es negro */
+}
+
+
+
 
 /* Diseño responsivo para tablets */
 @media (max-width: 768px) {

@@ -23,7 +23,7 @@ const productores = [
 const Productores = () => {
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4 text-success">Nuestros Productores</h1>
+      <h1 className="text-center mb-4 text-dark">Nuestros Productores</h1>
       <ProductorCarousel productores={productores} />
     </div>
   );

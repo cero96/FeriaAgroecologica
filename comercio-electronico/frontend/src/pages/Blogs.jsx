@@ -23,7 +23,7 @@ const floresta = [
 const BlogPage = () => {
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4 text-success">La voz de la comunidad</h1>
+      <h1 className="text-center mb-4 text-dark">La voz de la comunidad</h1>
       <Blog items={floresta} /> {/* Cambiamos el prop a "items" */}
     </div>
   );
