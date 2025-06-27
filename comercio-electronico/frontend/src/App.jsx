@@ -5,12 +5,13 @@ import AppRoutes from './routes/AppRoutes';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { CartProvider } from './context/CartContext'; // 👈 Importa el provider
-
+import WhatsAppButton from './components/WhatsAppButton';
 export default function App() {
   return (
     <BrowserRouter>
       <CartProvider>
         <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+          <WhatsAppButton phoneNumber="+59399079078578" />
           <Navbar />
           <main style={{ flexGrow: 1 }}>
             <AppRoutes />
