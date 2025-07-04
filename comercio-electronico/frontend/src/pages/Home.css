@@ -1,0 +1,44 @@
+/* src/pages/Home.css */
+.home {
+  background: linear-gradient(to bottom, #c6f6d5, #e9f8e5); /* Gradiente verde */
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 3rem;
+  color: #2F855A;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 1.25rem;
+  color: #4A5568;
+  margin-top: 1rem;
+}
+
+.featured-products {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+}
+
+.product-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 250px;
+  text-align: center;
+}
+
+.product-card img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.product-card h3 {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+  color: #2F855A;
+}
