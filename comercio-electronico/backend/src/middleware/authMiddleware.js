@@ -1,29 +1,21 @@
 // backend/src/middleware/authMiddleware.js
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-// Clave secreta (recomendado guardar en .env)
-const SECRET_KEY = process.env.JWT_SECRET || 'mi_clave_secreta';
-
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers['authorization'];
-
-  if (!authHeader) {
-    return res.status(401).json({ message: 'Token no proporcionado' });
+export const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Token no proporcionado.' });
   }
 
-  const token = authHeader.split(' ')[1]; // Formato esperado: Bearer TOKEN
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token inválido' });
-  }
-
+  const token = authHeader.split(' ')[1];
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // Agrega datos del usuario al request
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'clave_super_secreta');
+    req.user = decoded;
+    req.tenantId = decoded.tenantId;
+    req.userId = decoded.userId;
     next();
-  } catch (err) {
-    return res.status(403).json({ message: 'Token inválido o expirado' });
+  } catch (error) {
+    console.error('Error de verificación JWT:', error);
+    return res.status(403).json({ message: 'Token inválido o expirado.' });
   }
-}
-
-module.exports = authMiddleware;
+};

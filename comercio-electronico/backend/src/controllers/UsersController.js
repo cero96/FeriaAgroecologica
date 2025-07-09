@@ -1,59 +1,97 @@
-// backend/src/controllers/UsersController.js
+// src/controllers/UsersController.js
+import prisma from '../lib/prisma.js';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
-// Simulación temporal de base de datos
-let usersDB = [];
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_feria_floresta';
 
 export const register = async (req, res) => {
-  const { userId, name, email, phone, password } = req.body;
+  const { name, phone, email, password, tenantId, tenantName = 'Default Tenant', role = 'user' } = req.body;
 
-  const existingUser = usersDB.find(u => u.userId === userId);
-  if (existingUser) {
-    return res.status(409).json({ message: 'El usuario ya existe' });
+  try {
+    // Verificar si el usuario ya existe para ese tenant
+    const existingUser = await prisma.user.findFirst({
+      where: { email, tenantId }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'El correo ya está registrado para esta empresa' });
+    }
+
+    // Si no envían tenantId, crear un tenant nuevo
+    let tenant;
+
+    if (!tenantId) {
+      tenant = await prisma.tenant.create({
+        data: { name: tenantName }
+      });
+    } else {
+      tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId }
+      });
+      if (!tenant) {
+        return res.status(404).json({ message: 'Tenant no encontrado' });
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear usuario asociado al tenant correcto
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        phone,
+        email,
+        password: hashedPassword,
+        role,
+        tenant: {
+          connect: { id: tenant.id }
+        }
+      }
+    });
+
+    return res.status(201).json({ message: 'Usuario registrado con éxito', user: newUser });
+  } catch (error) {
+    console.error('Error en registro:', error);
+    return res.status(500).json({ message: 'Error del servidor' });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = {
-    userId,
-    name,
-    email,
-    phone,
-    password: hashedPassword,
-    role: 'user'
-  };
-
-  usersDB.push(newUser);
-  res.status(201).json({ message: 'Usuario registrado correctamente' });
 };
 
 export const login = async (req, res) => {
-  const { userId, password } = req.body;
+  const { email, password, tenantId } = req.body;
 
-  const user = usersDB.find(u => u.userId === userId);
-  if (!user) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
-  }
+  try {
+    const user = await prisma.user.findFirst({
+      where: { email, tenantId }
+    });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ message: 'Contraseña incorrecta' });
-  }
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-  const token = jwt.sign(
-    { userId: user.userId, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-  res.json({
-    message: 'Inicio de sesión exitoso',
-    token,
-    user: {
-      userId: user.userId,
+    const token = jwt.sign({
+      userId: user.id,
+      tenantId: user.tenantId,
       name: user.name,
       email: user.email,
       role: user.role
-    }
-  });
+    }, JWT_SECRET, { expiresIn: '1h' });
+
+    return res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      token,
+      user: {
+        userId: user.id,
+        tenantId: user.tenantId,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en login:', error);
+    return res.status(500).json({ message: 'Error del servidor' });
+  }
 };
