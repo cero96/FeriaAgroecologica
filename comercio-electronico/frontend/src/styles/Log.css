@@ -1,0 +1,30 @@
+/* Fuentes y espaciados */
+.log-page { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+/* Preview */
+.log-preview { background-color: #f5fff7; /* verde muy suave */ }
+.log-title {
+  color: #2e7d32;  /* verde oscuro */
+  font-weight: 600;
+  font-size: 1.75rem;
+}
+.log-description { color: #555; font-size: 1rem; margin-top: .75rem; }
+
+/* Imagen con hover zoom */
+.log-image-wrapper { overflow: hidden; border-radius: 12px; }
+.log-image {
+  transition: transform .4s ease;
+  width: 100%;
+  height: auto;
+}
+.log-image:hover { transform: scale(1.05); }
+
+/* Botón */
+.btn-success {
+  background-color: #388e3c;
+  border-color: #2e7d32;
+}
+.btn-success:hover {
+  background-color: #2e7d32;
+  border-color: #1b5e20;
+}
