@@ -1,11 +1,12 @@
 import React from 'react';
 import ProductorCarousel from '../components/ProductorCarrousel';
+import Particule from '../components/Particule'; // importa tu componente Particule
 
 const productores = [
   {
     nombre: 'María Gómez',
     descripcion: 'Productora de lacteos.',
-    imagen: '/Images/Productores/1.png'
+    imagen: '/Images/Productores/2.png'
   },
   {
     nombre: 'Carlos Pérez',
@@ -15,16 +16,19 @@ const productores = [
   {
     nombre: 'Ana Torres',
     descripcion: 'Cultiva desde los 5 años',
-    imagen: '/Images/Productores/2.png'
+    imagen: '/Images/Productores/1.png'
   },
 ];
 
 const Productores = () => {
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4 text-success">Nuestros Productores</h2>
+    <>
+      <Particule /> {/* Partículas de fondo */}
+      <div className="container mt-5" style={{ marginBottom: '60px', position: 'relative', zIndex: 1 }}>
+        <h2 className="text-center mb-4 text-success">Nuestros Productores</h2>
         <ProductorCarousel productores={productores} />
-    </div>
+      </div>
+    </>
   );
 };
 

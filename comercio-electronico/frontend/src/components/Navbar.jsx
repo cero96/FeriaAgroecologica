@@ -79,7 +79,12 @@ const Navbar = () => {
             </li>
             {token && (
               <li className="nav-item">
-                <Link className="nav-link text-white" to="/dashboard">Dashboard</Link>
+                <Link className="nav-link text-white" to="/dashboard">Crear Producto </Link>
+              </li>
+            )}
+            {token && (
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/">Crear Historia</Link>
               </li>
             )}
           </ul>

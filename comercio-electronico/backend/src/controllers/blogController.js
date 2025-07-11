@@ -1,64 +1,85 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // Crear historia
-exports.createBlog = async (req, res) => {
+export const createBlogPost = async (req, res) => {
   try {
-    const { tenantId, title, content, imageUrl } = req.body;
-    const blog = await prisma.blog.create({
-      data: { tenantId, title, content, imageUrl },
+    const { tenantId, userId, title, description, imageUrl } = req.body;
+    const blogPost = await prisma.blogPost.create({
+      data: { tenantId, userId, title, description, imageUrl },
     });
-    res.status(201).json(blog);
+    res.status(201).json(blogPost);
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear el blog', details: error });
+    console.error('Error creando blogPost:', error);
+    res.status(500).json({ error: 'Error al crear el blog', details: error.message });
   }
 };
 
 // Listar historias
-exports.getAllBlogs = async (req, res) => {
+export const getAllBlogPosts = async (req, res) => {
   try {
-    const blogs = await prisma.blog.findMany();
-    res.json(blogs);
+    const blogPosts = await prisma.blogPost.findMany({
+      include: {
+        tenant: true,
+        user: true,
+        categories: true,
+        tags: true,
+      },
+    });
+    res.json(blogPosts);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener blogs' });
+    console.error('Error al obtener blogPosts:', error);
+    res.status(500).json({ error: 'Error al obtener blogs', details: error.message });
   }
 };
 
 // Obtener historia por ID
-exports.getBlogById = async (req, res) => {
+export const getBlogPostById = async (req, res) => {
   try {
-    const blog = await prisma.blog.findUnique({
-      where: { id: parseInt(req.params.id) },
+    const id = parseInt(req.params.id);
+    const blogPost = await prisma.blogPost.findUnique({
+      where: { id },
+      include: {
+        tenant: true,
+        user: true,
+        categories: true,
+        tags: true,
+      },
     });
-    if (!blog) return res.status(404).json({ error: 'Blog no encontrado' });
-    res.json(blog);
+    if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
+    res.json(blogPost);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener el blog' });
+    console.error('Error al obtener blogPost:', error);
+    res.status(500).json({ error: 'Error al obtener el blog', details: error.message });
   }
 };
 
 // Actualizar historia
-exports.updateBlog = async (req, res) => {
+export const updateBlogPost = async (req, res) => {
   try {
-    const { title, content, imageUrl } = req.body;
-    const blog = await prisma.blog.update({
-      where: { id: parseInt(req.params.id) },
-      data: { title, content, imageUrl },
+    const id = parseInt(req.params.id);
+    const { title, description, imageUrl } = req.body;
+    const blogPost = await prisma.blogPost.update({
+      where: { id },
+      data: { title, description, imageUrl },
     });
-    res.json(blog);
+    res.json(blogPost);
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar el blog' });
+    console.error('Error al actualizar blogPost:', error);
+    res.status(500).json({ error: 'Error al actualizar el blog', details: error.message });
   }
 };
 
 // Eliminar historia
-exports.deleteBlog = async (req, res) => {
+export const deleteBlogPost = async (req, res) => {
   try {
-    await prisma.blog.delete({
-      where: { id: parseInt(req.params.id) },
+    const id = parseInt(req.params.id);
+    await prisma.blogPost.delete({
+      where: { id },
     });
     res.json({ message: 'Blog eliminado correctamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar el blog' });
+    console.error('Error al eliminar blogPost:', error);
+    res.status(500).json({ error: 'Error al eliminar el blog', details: error.message });
   }
 };

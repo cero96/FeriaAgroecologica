@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import ProductForm from '../components/ProductForm';
+import NewsForm from '../components/NewsForm';
 import { apiFetch } from '../services/api';
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showNewsForm, setShowNewsForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Cargar productos
   const fetchProducts = async () => {
     setLoading(true);
     setError('');
@@ -29,12 +32,21 @@ export default function Dashboard() {
 
   const handleCreate = () => {
     setEditingProduct(null);
+    setShowNewsForm(false);
     setShowForm(true);
   };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
+    setShowNewsForm(false);
     setShowForm(true);
+  };
+
+  const handleCreateNews = () => {
+    setShowForm(false);
+    setShowNewsForm(true);
+    const modal = new bootstrap.Modal(document.getElementById('newsModal'));
+    modal.show();
   };
 
   const handleDelete = async (id) => {
@@ -52,14 +64,12 @@ export default function Dashboard() {
   const handleFormSubmit = async (productData) => {
     try {
       if (editingProduct) {
-        // Editar
         const updated = await apiFetch(`/products/${editingProduct.id}`, {
           method: 'PUT',
           body: JSON.stringify(productData),
         });
         setProducts(products.map(p => p.id === updated.id ? updated : p));
       } else {
-        // Crear
         const created = await apiFetch('/products', {
           method: 'POST',
           body: JSON.stringify(productData),
@@ -70,6 +80,38 @@ export default function Dashboard() {
     } catch (err) {
       alert('Error al guardar producto');
       console.error(err);
+    }
+  };
+
+  const handleNewsFormSubmit = async (newsData) => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:3000/api/blogs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tenantId: Number(newsData.tenantId),
+          userId: Number(newsData.userId),
+          title: newsData.title,
+          description: newsData.description,
+          imageUrl: newsData.imageUrl || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Error desconocido');
+      }
+
+      alert('Noticia creada correctamente');
+      setShowNewsForm(false);
+      const modal = bootstrap.Modal.getInstance(document.getElementById('newsModal'));
+      modal.hide();
+    } catch (error) {
+      alert('Error al crear la noticia: ' + (error.message || error));
     }
   };
 
@@ -85,7 +127,10 @@ export default function Dashboard() {
         <button className="btn btn-danger" onClick={handleLogout}>Cerrar sesión</button>
       </div>
 
-      <button className="btn btn-primary mb-3" onClick={handleCreate}>Nuevo Producto</button>
+      <div className="mb-3 d-flex gap-2">
+        <button className="btn btn-primary" onClick={handleCreate}>Nuevo Producto</button>
+        <button className="btn btn-secondary" onClick={handleCreateNews}>Crear Historia</button>
+      </div>
 
       {loading && <p>Cargando productos...</p>}
       {error && <div className="alert alert-danger">{error}</div>}
@@ -118,6 +163,7 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Formulario productos */}
       {showForm && (
         <ProductForm
           product={editingProduct}
@@ -125,6 +171,30 @@ export default function Dashboard() {
           onClose={() => setShowForm(false)}
         />
       )}
+
+      {/* Modal para NewsForm */}
+      <div className="modal fade" id="newsModal" tabIndex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg modal-dialog-scrollable">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="newsModalLabel">Crear Historia</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div className="modal-body">
+              {showNewsForm && (
+                <NewsForm
+                  onSubmit={handleNewsFormSubmit}
+                  onClose={() => {
+                    setShowNewsForm(false);
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('newsModal'));
+                    modal.hide();
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

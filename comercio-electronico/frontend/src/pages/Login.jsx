@@ -1,7 +1,6 @@
-// src/pages/Login.jsx (o donde lo tengas)
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Particule from '../components/Particule'; // Ajusta la ruta según tu estructura
+import Particule from '../components/Particule.jsx'; // Ajusta la ruta según tu estructura
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -50,19 +49,26 @@ export default function Login() {
   };
 
   return (
-    <>
+    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
       <Particule />
       <div
         className="container d-flex justify-content-center align-items-center"
-        style={{ minHeight: '80vh', position: 'relative', zIndex: 1 }}
+        style={{
+          minHeight: '100vh',
+          position: 'relative',
+          zIndex: 1,
+        }}
       >
         <div
           className="card p-4 shadow"
           style={{
             maxWidth: '400px',
-            borderRadius: '12px',
-            borderColor: '#2e7d32',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderRadius: '16px',
+            border: '1px solid rgba(46, 125, 50, 0.4)',
+            backgroundColor: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
           }}
         >
           <h2 className="text-center mb-4" style={{ color: '#2e7d32' }}>
@@ -104,6 +110,6 @@ export default function Login() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
