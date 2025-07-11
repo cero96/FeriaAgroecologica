@@ -1,113 +1,72 @@
 import React from 'react';
+import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { SiX } from 'react-icons/si'; // Ícono de X
+import { MdLocationOn, MdEmail } from 'react-icons/md'; // Ubicación y correo
 
 const Footer = () => (
   <footer
     style={{
-      backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZbI3mJf48bXkR0i-foVynwlGRAHehbwttDw&s')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      borderTop: '3px solid #ffa500',
-      position: 'relative',
+      background: 'linear-gradient(to bottom, #2e4a30ff, #487249ff, #669868ff)',
+      padding: '1rem 1rem',
+      fontSize: '1rem',
       color: '#fff',
-      fontSize: '0.9rem',
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      padding: '1.5rem 2rem',
+      fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif',
     }}
   >
-    {/* Overlay para contraste */}
     <div
       style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.65)',
-        zIndex: 0,
-      }}
-    />
-    
-    <div
-      style={{
-        position: 'relative',
-        zIndex: 1,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1.5rem',
-        textAlign: 'left',
         maxWidth: '1200px',
         margin: '0 auto',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        rowGap: '1.5rem',
       }}
     >
-      <div style={{ minWidth: '180px' }}>
-        <h5 style={{ marginBottom: '0.3rem', fontWeight: '700' }}>🌱 Feria Agroecológica</h5>
+      <div style={{ flex: '1 1 200px' }}>
+        <h4 style={{ marginBottom: '0.5rem' }}>🌿 Feria Agroecológica</h4>
         <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Todos los derechos reservados</p>
       </div>
 
-      <div style={{ minWidth: '160px' }}>
-        <p style={{ margin: 0 }}>
-          📍 <strong>Ubicación:</strong> Av. Principal #123, Ciudad Verde
+      <div style={{ flex: '1 1 200px' }}>
+        <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MdLocationOn color="#e53935" size={20} />
+          Calle Siempre Viva #123, Ciudad Verde
+        </p>
+        <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <FaWhatsapp color="#000" size={20} />
+          +593 999 123 456
+        </p>
+        <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MdEmail color="#fff" size={20} />
+          contacto@feriaagroecologica.com
         </p>
       </div>
 
-      <div style={{ minWidth: '160px' }}>
-        <p style={{ margin: 0 }}>
-          📞 <strong>Teléfono:</strong> +593 999 123 456
-        </p>
-      </div>
-
-      <div style={{ minWidth: '180px' }}>
-        <p style={{ margin: 0 }}>
-          📧 <strong>Email:</strong> contacto@feriaagroecologica.com
-        </p>
-      </div>
-
-      <div style={{ minWidth: '220px' }}>
-        <p style={{ marginBottom: '0.3rem' }}>
-          🔗 <strong>Síguenos:</strong>
-        </p>
-        <div>
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: '#ffa500',
-              marginRight: '1rem',
-              textDecoration: 'none',
-              fontWeight: '600',
-            }}
-          >
-            Facebook
+      <div style={{ flex: '1 1 1px' }}>
+        <p style={{ marginBottom: '0.5rem',fontSize:"1.3rem", fontWeight: '600,' }}>Síguenos:</p>
+        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '2rem' }}>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+            <FaFacebookF />
           </a>
-          <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: '#ffa500',
-              marginRight: '1rem',
-              textDecoration: 'none',
-              fontWeight: '600',
-            }}
-          >
-            Instagram
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+            <FaInstagram />
           </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: '#ffa500',
-              textDecoration: 'none',
-              fontWeight: '600',
-            }}
-          >
-            Twitter
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+            <SiX />
           </a>
         </div>
       </div>
     </div>
   </footer>
 );
+
+// Enlaces claros sobre fondo verde
+const linkStyle = {
+  color: '#fff',
+  textDecoration: 'none',
+  fontWeight: '500',
+};
 
 export default Footer;
