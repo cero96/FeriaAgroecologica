@@ -1,102 +1,101 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useCart } from "../context/CartContext";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-
+import ProductCard from "../components/ProductCard";
+import AddToCartModal from "../components/AddToCartModal";
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/public/catalog")
-      .then(res => setProductos(res.data))
-      .catch(err => console.error("Error al cargar productos:", err));
+    axios
+      .get("http://localhost:3000/api/public/catalog")
+      .then((res) => setProductos(res.data))
+      .catch((err) => console.error("Error al cargar productos:", err));
   }, []);
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
-    setQuantity(1);
-    setShowModal(true);
   };
 
-  const handleAddToCart = () => {
-    if (quantity <= 0 || quantity > selectedProduct.quantityAvailable) return;
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+  };
+
+  const handleConfirmAdd = (quantity) => {
     addToCart({ ...selectedProduct, quantity });
-    setShowModal(false);
   };
 
   return (
-    <div className="container mt-5">
-      <h1>Catálogo de Productos Agroecológicos</h1>
-      <div className="row mt-4">
-        {productos.length === 0 && <p>No hay productos disponibles.</p>}
-        {productos.map((prod) => (
-          <div className="col-md-4 mb-4" key={prod.id}>
-            <div className="card h-100">
-              {prod.photoUrl && (
-                <img src={prod.photoUrl} className="card-img-top" alt={prod.name} />
-              )}
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{prod.name}</h5>
-                <p className="card-text">{prod.description}</p>
-                <p><strong>Disponibles:</strong> {prod.quantityAvailable}</p>
-                <p><strong>Contacto:</strong> {prod.user.name} ({prod.user.phone})</p>
-                <a
-                  href={`https://wa.me/${prod.contactNumber}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-outline-success mb-2"
-                >
-                  Contactar por WhatsApp
-                </a>
-                <button
-                  className="btn btn-sm btn-primary mt-auto"
-                  onClick={() => handleOpenModal(prod)}
-                >
-                  🛒 Agregar al carrito
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <>
+      <style>{`
+        /* Reset y base */
+        body, html, #root {
+          margin: 0; padding: 0; min-height: 100vh;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #2e4d25;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          background-image: url('https://static.vecteezy.com/system/resources/previews/002/834/897/non_2x/light-green-background-with-small-and-big-stars-modern-geometric-abstract-illustration-with-stars-pattern-for-websites-landing-pages-vector.jpg');
+          background-repeat: no-repeat;
+          background-position: center center;
+          background-size: cover;
+          background-attachment: fixed;
+          background-color: #d4edda; /* fallback color */
+        }
 
-      {/* Modal de cantidad */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Seleccionar Cantidad</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedProduct && (
-            <>
-              <p><strong>{selectedProduct.name}</strong></p>
-              <p>Stock disponible: {selectedProduct.quantityAvailable}</p>
-              <input
-                type="number"
-                className="form-control"
-                min={1}
-                max={selectedProduct.quantityAvailable}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-              />
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleAddToCart}>
-            Agregar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+        .container {
+          max-width: 1200px;
+          margin: 2rem auto 4rem;
+          padding: 2rem 1.5rem;
+          border-radius: 16px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          position: relative;
+          z-index: 1;
+        }
+
+        h1 {
+          text-align: center;
+          font-weight: 700;
+          font-size: 2.5rem;
+          margin-bottom: 2rem;
+          text-shadow: 1px 1px 3px rgba(46, 77, 37, 0.3);
+        }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 1.8rem;
+        }
+
+        @media (max-width: 480px) {
+          h1 {
+            font-size: 2rem;
+          }
+        }
+      `}</style>
+
+      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
+        <h1>Catálogo de Productos Agroecológicos</h1>
+
+        <div className="grid">
+          {productos.length === 0 && <p>No hay productos disponibles.</p>}
+          {productos.map((prod) => (
+            <ProductCard key={prod.id} product={prod} onAdd={handleOpenModal} />
+          ))}
+        </div>
+
+        {selectedProduct && (
+          <AddToCartModal
+            product={selectedProduct}
+            onConfirm={handleConfirmAdd}
+            onClose={handleCloseModal}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
