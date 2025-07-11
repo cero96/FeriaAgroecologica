@@ -5,6 +5,8 @@ import cors from 'cors';
 import usersRoutes from './routes/usersRoutes.js';
 import productsRouter from './routes/products.js';
 import publicRoutes from './routes/public.js';
+import orderRoutes from './routes/orders.js';
+
 const app = express();
 
 // Middleware
@@ -21,7 +23,7 @@ app.use(cors({
 app.use('/api/users', usersRoutes);
 app.use('/api/products', productsRouter);
 app.use('/api/public', publicRoutes);
-
+app.use('/api/orders', orderRoutes);
 
 // Middleware para manejar errores generales
 app.use((err, req, res, next) => {

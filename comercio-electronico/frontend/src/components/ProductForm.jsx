@@ -7,6 +7,7 @@ export default function ProductForm({ onSubmit, onClose, product }) {
     photoUrl: '',
     quantityAvailable: '',
     contactNumber: '',
+    price: '',
   });
 
   useEffect(() => {
@@ -17,23 +18,41 @@ export default function ProductForm({ onSubmit, onClose, product }) {
         photoUrl: product.photoUrl || '',
         quantityAvailable: product.quantityAvailable || '',
         contactNumber: product.contactNumber || '',
+        price: product.price || '',
       });
     }
   }, [product]);
 
-  const handleChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.quantityAvailable) {
-      alert('Nombre y cantidad son obligatorios');
+    // Validaciones
+    const errors = [];
+    if (!form.name.trim()) errors.push('El nombre es obligatorio.');
+    if (!form.description.trim()) errors.push('La descripción es obligatoria.');
+    if (form.quantityAvailable === '' || isNaN(form.quantityAvailable) || Number(form.quantityAvailable) < 0)
+      errors.push('La cantidad debe ser un número mayor o igual a 0.');
+    if (!form.contactNumber.trim()) errors.push('El número de contacto es obligatorio.');
+    if (form.price === '' || isNaN(form.price) || Number(form.price) <= 0)
+      errors.push('El precio debe ser un número mayor que 0.');
+
+    if (errors.length > 0) {
+      alert(errors.join('\n'));
       return;
     }
 
     onSubmit({
       ...form,
       quantityAvailable: Number(form.quantityAvailable),
+      price: Number(form.price),
     });
   };
 
@@ -63,6 +82,7 @@ export default function ProductForm({ onSubmit, onClose, product }) {
               value={form.description}
               onChange={handleChange}
               rows={2}
+              required
             />
             <input
               type="url"
@@ -83,12 +103,24 @@ export default function ProductForm({ onSubmit, onClose, product }) {
               min={0}
             />
             <input
+              type="number"
+              step="0.01"
+              name="price"
+              className="form-control mb-2"
+              placeholder="Precio"
+              value={form.price}
+              onChange={handleChange}
+              required
+              min={0.01}
+            />
+            <input
               type="text"
               name="contactNumber"
               className="form-control"
               placeholder="Teléfono de contacto"
               value={form.contactNumber}
               onChange={handleChange}
+              required
             />
           </div>
           <div className="modal-footer">

@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [userName, setUserName] = useState(null);
-  const { cart } = useCart();
+  const { items: cart } = useCart();
   const total = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
