@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [userName, setUserName] = useState(null);
-  const { cart } = useCart(); 
-  const total = cart.reduce((sum, item) => sum + item.quantity, 0); 
-  
+  const { cart } = useCart();
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   useEffect(() => {
     if (token) {
       try {
@@ -27,13 +27,42 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg bg-success px-4 py-3">
-      <div className="container-fluid">
+    <nav
+      className="navbar navbar-expand-lg px-4 py-3"
+      style={{
+        backgroundImage: `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZbI3mJf48bXkR0i-foVynwlGRAHehbwttDw&s')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderBottom: '3px solid #ffa500', // 🔥 contorno fuego
+        position: 'relative',
+        color: '#fff',
+      }}
+    >
+      {/* Overlay oscuro para contraste */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          zIndex: 0,
+        }}
+      ></div>
+
+      <div className="container-fluid" style={{ position: 'relative', zIndex: 1 }}>
         <Link className="navbar-brand text-white fw-bold" to="/">
           🌱 FERIA AGROECOLÓGICA
         </Link>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-label="Toggle navigation"
+        >
           <span className="navbar-toggler-icon"></span>
         </button>
 
@@ -62,7 +91,10 @@ const Navbar = () => {
                   👤 {userName}
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-outline-light" onClick={handleLogout}>
+                  <button
+                    className="btn btn-outline-light fw-bold"
+                    onClick={handleLogout}
+                  >
                     Cerrar sesión
                   </button>
                 </li>
@@ -78,8 +110,8 @@ const Navbar = () => {
               </>
             )}
             <li className="nav-item ms-3">
-              <Link className="btn btn-light text-success fw-bold" to="/cart">
-                🛒 ({total}) 
+              <Link className="btn btn-light text-dark fw-bold" to="/cart">
+                🛒 ({total})
               </Link>
             </li>
           </ul>
