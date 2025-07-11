@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Tenant {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   name      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   users     User[]
   products  Product[]
   customers Customer[]
   orders    Order[]
+  blogPosts BlogPost[]
 }
 
 model User {
@@ -25,11 +26,12 @@ model User {
   name       String
   email      String
   phone      String
-  password   String   // hashed password
-  role       String   @default("seller") // 'admin' | 'seller'
+  password   String
+  role       String   @default("seller")
   createdAt  DateTime @default(now())
 
   products   Product[]
+  blogPosts  BlogPost[]
 
   @@unique([tenantId, email])
 }
@@ -43,6 +45,7 @@ model Product {
   photoUrl          String?
   quantityAvailable Int
   contactNumber     String
+  price             Float    // 🔹 Nuevo campo agregado
   createdAt         DateTime @default(now())
 
   tenant            Tenant   @relation(fields: [tenantId], references: [id])
@@ -55,7 +58,7 @@ model Customer {
   tenantId   Int
   name       String
   email      String   @unique
-  password   String   // hashed password
+  password   String
   createdAt  DateTime @default(now())
 
   tenant     Tenant   @relation(fields: [tenantId], references: [id])
@@ -66,7 +69,7 @@ model Order {
   id           Int      @id @default(autoincrement())
   tenantId     Int
   customerId   Int
-  status       String   // 'pending' | 'paid' | 'shipped' | 'cancelled'
+  status       String
   totalAmount  Float
   createdAt    DateTime @default(now())
 
@@ -96,4 +99,31 @@ model Payment {
   paidAt         DateTime
 
   order          Order    @relation(fields: [orderId], references: [id])
+}
+
+model BlogPost {
+  id          Int       @id @default(autoincrement())
+  tenantId    Int
+  userId      Int
+  title       String
+  description String
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  categories  Category[] @relation("PostCategories")
+  tags        Tag[]      @relation("PostTags")
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  posts     BlogPost[] @relation("PostCategories")
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  posts     BlogPost[] @relation("PostTags")
 }
