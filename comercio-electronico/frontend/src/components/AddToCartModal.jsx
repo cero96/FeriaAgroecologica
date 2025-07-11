@@ -3,11 +3,13 @@ import React, { useState, useEffect, useRef } from 'react';
 export default function AddToCartModal({ product, onConfirm, onClose }) {
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState('');
+  const [currentStock, setCurrentStock] = useState(product.quantityAvailable); // 🔥 Stock local
   const inputRef = useRef(null);
 
   useEffect(() => {
     setQuantity(1);
     setError('');
+    setCurrentStock(product.quantityAvailable); // 🔥 Resetea stock al abrir modal
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -16,19 +18,26 @@ export default function AddToCartModal({ product, onConfirm, onClose }) {
   if (!product) return null;
 
   const handleAdd = () => {
-    if (quantity >= 1 && quantity <= product.quantityAvailable) {
+    if (quantity >= 1 && quantity <= currentStock) {
+      // 🔥 Actualiza stock local
+      const newStock = currentStock - quantity;
+      setCurrentStock(newStock);
+      product.quantityAvailable = newStock; // ⚡️ También actualiza el stock del objeto producto
+
+      // 👇 Llama al callback para agregar al carrito
       onConfirm(quantity);
+
       onClose();
     } else {
-      setError(`Ingrese una cantidad válida (1 - ${product.quantityAvailable})`);
+      setError(`Ingrese una cantidad válida (1 - ${currentStock})`);
     }
   };
 
   const handleQuantityChange = (e) => {
     const val = Number(e.target.value);
     setQuantity(val);
-    if (val < 1 || val > product.quantityAvailable) {
-      setError(`Ingrese una cantidad válida (1 - ${product.quantityAvailable})`);
+    if (val < 1 || val > currentStock) {
+      setError(`Ingrese una cantidad válida (1 - ${currentStock})`);
     } else {
       setError('');
     }
@@ -141,7 +150,7 @@ export default function AddToCartModal({ product, onConfirm, onClose }) {
             {product.name}
           </p>
           <p style={{ margin: '0', color: '#555' }}>
-            Stock disponible: <strong>{product.quantityAvailable}</strong>
+            Stock disponible: <strong>{currentStock}</strong>
           </p>
 
           <label
@@ -156,7 +165,7 @@ export default function AddToCartModal({ product, onConfirm, onClose }) {
             ref={inputRef}
             value={quantity}
             min={1}
-            max={product.quantityAvailable}
+            max={currentStock}
             onChange={handleQuantityChange}
             aria-invalid={!!error}
             aria-describedby={error ? 'quantity-error' : undefined}

@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ProductCard = ({ product, onAdd }) => {
+  const [localStock, setLocalStock] = useState(product.quantityAvailable); // 🔥 Stock local
+
+  const handleAddToCart = () => {
+    if (localStock > 0) {
+      onAdd(product, (addedQuantity) => {
+        // 🔥 Actualiza stock local cuando se agrega
+        setLocalStock((prevStock) => prevStock - addedQuantity);
+      });
+    } else {
+      alert("🚫 Sin stock disponible");
+    }
+  };
+
   return (
     <article
       style={{
@@ -23,7 +36,7 @@ const ProductCard = ({ product, onAdd }) => {
         justifyContent: "space-between",
       }}
       tabIndex={0}
-      aria-label={`Producto ${product.name}, ${product.description}, disponibles: ${product.quantityAvailable}`}
+      aria-label={`Producto ${product.name}, ${product.description}, disponibles: ${localStock}, precio: $${product.price}`}
       onMouseOver={(e) => {
         e.currentTarget.style.transform = "scale(1.05)";
       }}
@@ -69,6 +82,20 @@ const ProductCard = ({ product, onAdd }) => {
         >
           {product.name}
         </h2>
+
+        {/* 💰 Precio destacado */}
+        <p
+          style={{
+            fontSize: "1.2em",
+            fontWeight: "bold",
+            color: "#ffd700", // 🟡 dorado
+            textShadow: "1px 1px 4px rgba(0,0,0,0.7)",
+            margin: "4px 0",
+          }}
+        >
+          💰 ${product.price.toFixed(2)}
+        </p>
+
         <p
           style={{
             fontSize: "1em",
@@ -85,7 +112,7 @@ const ProductCard = ({ product, onAdd }) => {
             textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
           }}
         >
-          📦 Disponibles: {product.quantityAvailable}
+          📦 Disponibles: {localStock}
         </p>
         <p
           style={{
@@ -108,7 +135,7 @@ const ProductCard = ({ product, onAdd }) => {
             fontWeight: "bold",
             marginTop: "12px",
           }}
-          onClick={() => onAdd(product)}
+          onClick={handleAddToCart}
           onMouseOver={(e) => {
             e.currentTarget.style.backgroundColor = "#ff4500"; // 🔥 hover fuego
             e.currentTarget.style.transform = "scale(1.05)";
