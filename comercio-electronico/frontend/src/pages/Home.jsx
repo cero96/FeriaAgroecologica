@@ -31,19 +31,21 @@ const Home = () => {
   return (
     <>
       <style>{`
-        /* Reset y base */
+        /* Estilos base y fondo */
         body, html, #root {
-          margin: 0; padding: 0; min-height: 100vh;
+          margin: 0;
+          padding: 0;
+          min-height: 100vh;
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #2e4d25;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          background-image: url('https://static.vecteezy.com/system/resources/previews/002/834/897/non_2x/light-green-background-with-small-and-big-stars-modern-geometric-abstract-illustration-with-stars-pattern-for-websites-landing-pages-vector.jpg');
+          background-image: url("Public/images/4.png"); /* ruta corregida */
           background-repeat: no-repeat;
-          background-position: center center;
+          background-position: center top;
           background-size: cover;
           background-attachment: fixed;
-          background-color: #d4edda; /* fallback color */
+          background-color: #d4edda; /* fallback */
         }
 
         .container {
@@ -51,18 +53,31 @@ const Home = () => {
           margin: 2rem auto 4rem;
           padding: 2rem 1.5rem;
           border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
           position: relative;
           z-index: 1;
+          text-align: center; /* centra el h1 */
         }
 
         h1 {
-          text-align: center;
-          font-weight: 700;
-          font-size: 2.5rem;
-          margin-bottom: 2rem;
-          text-shadow: 1px 1px 3px rgba(46, 77, 37, 0.3);
-        }
+  color: #f48414ff; /* verde oscuro */
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  background-color: rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+
+  /* Texto con borde negro */
+  -webkit-text-stroke: 1px black; /* para navegadores webkit (Chrome, Safari) */
+  text-stroke: 1px black; /* soporte futuro */
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000; /* sombra negra para reforzar borde en navegadores que no soportan text-stroke */
+}
+
 
         .grid {
           display: grid;
@@ -78,7 +93,9 @@ const Home = () => {
       `}</style>
 
       <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
-        <h1>Catálogo de Productos Agroecológicos</h1>
+        <h1 className="animate__animated animate__fadeInLeftBig">
+          Catálogo de Productos Agroecológicos
+        </h1>
 
         <div className="grid">
           {productos.length === 0 && <p>No hay productos disponibles.</p>}
