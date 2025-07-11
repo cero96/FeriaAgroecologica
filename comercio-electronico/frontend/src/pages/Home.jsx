@@ -40,12 +40,12 @@ const Home = () => {
           color: #2e4d25;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          background-image: url("Public/images/4.png"); /* ruta corregida */
+          background-image: url("public/Images/4.png"); /* ruta corregida */
           background-repeat: no-repeat;
           background-position: center top;
           background-size: cover;
           background-attachment: fixed;
-          background-color: #d4edda; /* fallback */
+          
         }
 
         .container {
