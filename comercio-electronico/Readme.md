@@ -70,3 +70,12 @@ falta validar correo
 unir con firebase para inicio de secion con google 
 recuperar contrase;a 
 y cambiar contrase;a
+
+
+comandos backend dependencias
+ npm i --save-dev prisma@latest      
+ npm i @prisma/client@latest
+
+comandos frontend
+npm install react-tsparticles tsparticles
+npm install bootstrap react-icons
