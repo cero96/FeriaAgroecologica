@@ -38,23 +38,26 @@ const Home = () => {
         }
 
         body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          color: #2e4d25;
-          background-image: url("public/Images/4.png");
-          background-repeat: repeat-x;
-          background-size: auto 100%;
-          background-position: 0 0;
-          animation: moveBg 40s ease-in-out infinite alternate;
-        }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2e4d25;
+  background-image: url("public/Images/4.png");
+  background-repeat: no-repeat;
+  background-size: 130% 110%; /* Imagen más grande y alta */
+  background-position: center;
+  animation: moveBg 20s ease-in-out infinite alternate;
+  background-color: #fff; /* Fondo de respaldo */
+  background-attachment: fixed;
+}
 
-        @keyframes moveBg {
-          0% {
-            background-position-x: 0;
-          }
-          100% {
-            background-position-x: 1000px;
-          }
-        }
+@keyframes moveBg {
+  0% {
+    background-position-x: 100%;
+  }
+  100% {
+    background-position-x: 0%;
+  }
+}
+
 
         .hero {
           padding: 5rem 1rem 2rem;
@@ -65,25 +68,24 @@ const Home = () => {
         }
 
         .hero h2 {
-  font-size: 3rem;
-  font-weight: bold;
-  color: #1e3d13; /* Color del texto */
-  margin-bottom: 1rem;
-  -webkit-text-stroke: 0px white; /* Borde blanco */
-  text-stroke: 1px white; /* Para navegadores compatibles */
-  text-shadow:
-    -1px -1px 0 white,
-    1px -1px 0 white,
-    -1px 1px 0 white,
-    1px 1px 0 white; /* Refuerzo del borde */
-}
-
+          font-size: 3rem;
+          font-weight: bold;
+          color: #1e3d13;
+          margin-bottom: 1rem;
+          -webkit-text-stroke: 0px white;
+          text-stroke: 1px white;
+          text-shadow:
+            -1px -1px 0 white,
+            1px -1px 0 white,
+            -1px 1px 0 white,
+            1px 1px 0 white;
+        }
 
         .hero p {
           font-size: 1.3rem;
           max-width: 700px;
           margin: 0 auto;
-          color: #ffffffff;
+          color: #fff;
         }
 
         .container {
@@ -96,7 +98,6 @@ const Home = () => {
           text-align: center;
         }
 
-       
         .grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -127,15 +128,21 @@ const Home = () => {
 
       {/* Hero */}
       <div className="hero">
-        <h2 className="animate__animated animate__fadeInDown">¡Bienvenido a la Feria Agroecológica!</h2>
+        <h2 className="animate__animated animate__fadeInDown">
+          ¡Bienvenido a la Feria Agroecológica!
+        </h2>
         <p className="animate__animated animate__fadeInUp">
           Promovemos el consumo responsable y el comercio justo. Explora nuestro catálogo de productos naturales, sostenibles y agroecológicos que ayudan a proteger el planeta.
         </p>
       </div>
 
       {/* Catálogo */}
-      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
-            <div className="grid">
+      <div
+        className="container"
+        role="main"
+        aria-label="Catálogo de productos agroecológicos"
+      >
+        <div className="grid">
           {productos.length === 0 && <p>No hay productos disponibles.</p>}
           {productos.map((prod) => (
             <ProductCard key={prod.id} product={prod} onAdd={handleOpenModal} />
@@ -150,7 +157,6 @@ const Home = () => {
           />
         )}
       </div>
-
     </>
   );
 };
