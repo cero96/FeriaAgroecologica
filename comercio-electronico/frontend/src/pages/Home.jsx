@@ -31,21 +31,59 @@ const Home = () => {
   return (
     <>
       <style>{`
-        /* Estilos base y fondo */
-        body, html, #root {
+        html, body, #root {
           margin: 0;
           padding: 0;
-          min-height: 100vh;
+          height: 100%;
+        }
+
+        body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #2e4d25;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          background-image: url("public/Images/4.png"); /* ruta corregida */
-          background-repeat: no-repeat;
-          background-position: center top;
-          background-size: cover;
-          background-attachment: fixed;
-          
+          background-image: url("public/Images/4.png");
+          background-repeat: repeat-x;
+          background-size: auto 100%;
+          background-position: 0 0;
+          animation: moveBg 40s ease-in-out infinite alternate;
+        }
+
+        @keyframes moveBg {
+          0% {
+            background-position-x: 0;
+          }
+          100% {
+            background-position-x: 1000px;
+          }
+        }
+
+        .hero {
+          padding: 5rem 1rem 2rem;
+          text-align: center;
+          background: rgba(0, 0, 0, 0.5);
+          border-bottom: 2px solid #ddd;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero h2 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #1e3d13; /* Color del texto */
+  margin-bottom: 1rem;
+  -webkit-text-stroke: 0px white; /* Borde blanco */
+  text-stroke: 1px white; /* Para navegadores compatibles */
+  text-shadow:
+    -1px -1px 0 white,
+    1px -1px 0 white,
+    -1px 1px 0 white,
+    1px 1px 0 white; /* Refuerzo del borde */
+}
+
+
+        .hero p {
+          font-size: 1.3rem;
+          max-width: 700px;
+          margin: 0 auto;
+          color: #ffffffff;
         }
 
         .container {
@@ -55,49 +93,49 @@ const Home = () => {
           border-radius: 16px;
           position: relative;
           z-index: 1;
-          text-align: center; /* centra el h1 */
+          text-align: center;
         }
 
-        h1 {
-  color: #f48414ff; /* verde oscuro */
-  font-weight: 600;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  background-color: rgba(255, 255, 255, 0.25);
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-
-  /* Texto con borde negro */
-  -webkit-text-stroke: 1px black; /* para navegadores webkit (Chrome, Safari) */
-  text-stroke: 1px black; /* soporte futuro */
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000; /* sombra negra para reforzar borde en navegadores que no soportan text-stroke */
-}
-
-
+       
         .grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
           gap: 1.8rem;
         }
 
+        .footer {
+          padding: 2rem;
+          text-align: center;
+          font-size: 0.9rem;
+          color: #fff;
+          background-color: #1e3d13;
+          margin-top: 3rem;
+        }
+
         @media (max-width: 480px) {
           h1 {
             font-size: 2rem;
           }
+          .hero h2 {
+            font-size: 1.8rem;
+          }
+          .hero p {
+            font-size: 1rem;
+          }
         }
       `}</style>
 
-      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
-        <h1 className="animate__animated animate__fadeInLeftBig">
-          Catálogo de Productos Agroecológicos
-        </h1>
+      {/* Hero */}
+      <div className="hero">
+        <h2 className="animate__animated animate__fadeInDown">¡Bienvenido a la Feria Agroecológica!</h2>
+        <p className="animate__animated animate__fadeInUp">
+          Promovemos el consumo responsable y el comercio justo. Explora nuestro catálogo de productos naturales, sostenibles y agroecológicos que ayudan a proteger el planeta.
+        </p>
+      </div>
 
-        <div className="grid">
+      {/* Catálogo */}
+      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
+            <div className="grid">
           {productos.length === 0 && <p>No hay productos disponibles.</p>}
           {productos.map((prod) => (
             <ProductCard key={prod.id} product={prod} onAdd={handleOpenModal} />
@@ -112,6 +150,7 @@ const Home = () => {
           />
         )}
       </div>
+
     </>
   );
 };
