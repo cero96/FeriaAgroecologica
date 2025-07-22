@@ -28,18 +28,17 @@ const NewsForm = ({ onSubmit, onClose }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!formData.title || formData.title.trim().length < 5) {
-      newErrors.title = 'El título debe tener al menos 5 caracteres';
+    if (!formData.title || formData.title.trim().length < 10) {
+      newErrors.title = 'El título debe tener al menos 10 caracteres';
     }
 
-    if (!formData.description || formData.description.trim().length < 50) {
-      newErrors.description = 'La descripción debe tener al menos 50 caracteres';
+    if (!formData.description || formData.description.trim().length < 100) {
+      newErrors.description = 'La descripción debe tener al menos 100 caracteres';
     }
 
-    if (formData.imageUrl && !/^https?:\/\/.+/i.test(formData.imageUrl)) {
-  newErrors.imageUrl = 'Debe ser una URL válida (debe comenzar con http:// o https://)';
-}
-
+    if (formData.imageUrl && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(formData.imageUrl)) {
+      newErrors.imageUrl = 'Debe ser una URL válida de imagen';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

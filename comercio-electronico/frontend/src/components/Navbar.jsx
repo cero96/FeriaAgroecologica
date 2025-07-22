@@ -60,7 +60,7 @@ const Navbar = () => {
               <Link className="nav-link text-white" to="/productores">Comerciantes</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-white" to="/#">Blog</Link>
+              <Link className="nav-link text-white" to="/blog">Blog</Link>
             </li>
             {token && (
               <>
