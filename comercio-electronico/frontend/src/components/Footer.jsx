@@ -32,7 +32,7 @@ const Footer = () => (
       <div style={{ flex: '1 1 200px' }}>
         <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <MdLocationOn color="#e53935" size={20} />
-          Calle Siempre Viva #123, Ciudad Verde
+          La Floresta - Galavis 237, Quito 170143
         </p>
         <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FaWhatsapp color="#000" size={20} />
