@@ -7,7 +7,7 @@ export const createBlogPost = async (req, res) => {
     const { tenantId, userId, title, description, imageUrl } = req.body;
     const blogPost = await prisma.blogPost.create({
       data: { tenantId, userId, title, description, imageUrl },
-    });
+    });https://teams.microsoft.com/l/meetup-join/19%3avfbDiDoVytibmshhi0v6BNYTkDLYa6pmBT12e9FMR6k1%40thread.tacv2/1753222837371?context=%7b%22Tid%22%3a%2254474fb3-6359-40c1-b726-5d56a7dd2976%22%2c%22Oid%22%3a%22e4ac8c1a-87f7-49cb-a41d-8ce0b1dd4cb0%22%7d
     res.status(201).json(blogPost);
   } catch (error) {
     console.error('Error creando blogPost:', error);
