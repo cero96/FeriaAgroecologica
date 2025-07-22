@@ -47,7 +47,7 @@ const Footer = () => (
       <div style={{ flex: '1 1 1px' }}>
         <p style={{ marginBottom: '0.5rem',fontSize:"1.3rem", fontWeight: '600,' }}>Síguenos:</p>
         <div style={{ display: 'flex', gap: '1.5rem', fontSize: '2rem' }}>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+          <a href="https://www.facebook.com/people/La-Floresta-Mercado-Agroecol%C3%B3gico/100057415901608/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
             <FaFacebookF />
           </a>
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ProductForm from '../components/ProductForm';
-import NewsForm from '../components/NewsForm';
+import BlogPostsList from '../components/BlogPostsList';
 import { apiFetch } from '../services/api';
 
 export default function Dashboard() {

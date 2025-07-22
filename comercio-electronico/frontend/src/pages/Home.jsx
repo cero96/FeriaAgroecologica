@@ -42,7 +42,7 @@ const Home = () => {
   color: #2e4d25;
   background-image: url("public/Images/4.png");
   background-repeat: no-repeat;
-  background-size: 130% 110%; /* Imagen más grande y alta */
+  background-size: 110% 100%; /* Imagen más grande y alta */
   background-position: center;
   animation: moveBg 20s ease-in-out infinite alternate;
   background-color: #fff; /* Fondo de respaldo */
