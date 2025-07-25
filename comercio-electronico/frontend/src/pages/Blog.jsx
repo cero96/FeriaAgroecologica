@@ -1,6 +1,28 @@
 import React, { useEffect, useState } from 'react';
 
-export default function BlogPostsList() {
+function BlogCard({ post }) {
+  return (
+    <li
+      className="mb-4 p-3 border rounded shadow-sm bg-white"
+      style={{ wordBreak: 'break-word' }}
+    >
+      <h2 className="text-truncate" style={{ maxWidth: '100%' }}>{post.title}</h2>
+      {post.user && <p><strong>Autor:</strong> {post.user.name}</p>}
+      <p><small>Publicado el {new Date(post.createdAt).toLocaleDateString()}</small></p>
+      {post.imageUrl && (
+        <img
+          src={post.imageUrl}
+          alt={post.title}
+          style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover' }}
+          className="mb-3"
+        />
+      )}
+      <p style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>{post.description}</p>
+    </li>
+  );
+}
+
+export default function BlogPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -8,16 +30,18 @@ export default function BlogPostsList() {
   useEffect(() => {
     async function fetchBlogPosts() {
       try {
-        const res = await fetch('/api/blogs');
+        const res = await fetch('http://localhost:3000/api/blogs');
         if (!res.ok) throw new Error('Error al obtener blog posts');
+
         const data = await res.json();
-        setPosts(data);
+        setPosts(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
+
     fetchBlogPosts();
   }, []);
 
@@ -26,26 +50,16 @@ export default function BlogPostsList() {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Blog Posts</h1>
-      {posts.length === 0 && <p>No hay blog posts disponibles.</p>}
-      <ul className="list-unstyled">
-        {posts.map(({ id, title, description, imageUrl, createdAt, user }) => (
-          <li key={id} className="mb-5 p-3 border rounded shadow-sm">
-            <h2>{title}</h2>
-            {user && <p><strong>Autor:</strong> {user.name}</p>}
-            <p><small>Publicado el {new Date(createdAt).toLocaleDateString()}</small></p>
-            {imageUrl && (
-              <img 
-                src={imageUrl} 
-                alt={title} 
-                style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'cover' }} 
-                className="mb-3"
-              />
-            )}
-            <p>{description}</p>
-          </li>
-        ))}
-      </ul>
+      <h1>Blog Posts</h1>
+      {posts.length === 0 ? (
+        <p>No hay blog posts disponibles.</p>
+      ) : (
+        <ul className="list-unstyled">
+          {posts.map(post => (
+            <BlogCard key={post.id} post={post} />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

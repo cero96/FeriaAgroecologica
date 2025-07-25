@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { FaRegNewspaper, FaHeading, FaAlignLeft, FaImage } from 'react-icons/fa';
+import React, { useState } from 'react';
+import {
+  FaRegNewspaper,
+  FaHeading,
+  FaAlignLeft,
+  FaImage
+} from 'react-icons/fa';
 
 const NewsForm = ({ onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
-    tenantId: '',
-    userId: '',
     title: '',
     description: '',
     imageUrl: ''
@@ -12,18 +15,6 @@ const NewsForm = ({ onSubmit, onClose }) => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  // Obtener tenantId y userId desde localStorage al cargar
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        tenantId: user.tenantId,
-        userId: user.id
-      }));
-    }
-  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -36,8 +27,11 @@ const NewsForm = ({ onSubmit, onClose }) => {
       newErrors.description = 'La descripción debe tener al menos 100 caracteres';
     }
 
-    if (formData.imageUrl && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(formData.imageUrl)) {
-      newErrors.imageUrl = 'Debe ser una URL válida de imagen';
+    if (
+      formData.imageUrl &&
+      !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(formData.imageUrl.trim())
+    ) {
+      newErrors.imageUrl = 'Debe ser una URL válida de imagen (.jpg, .png, etc.)';
     }
 
     setErrors(newErrors);
@@ -57,10 +51,15 @@ const NewsForm = ({ onSubmit, onClose }) => {
     setLoading(true);
 
     try {
-      await onSubmit(formData);
+      // Enviar solo los campos que el backend necesita
+      await onSubmit({
+        title: formData.title,
+        description: formData.description,
+        imageUrl: formData.imageUrl
+      });
+
+      // Reset form después de crear
       setFormData({
-        tenantId: '',
-        userId: '',
         title: '',
         description: '',
         imageUrl: ''
@@ -68,7 +67,7 @@ const NewsForm = ({ onSubmit, onClose }) => {
       setErrors({});
       onClose();
     } catch (error) {
-      alert('Error al crear la noticia: ' + (error.message || error));
+      alert('Error al crear la noticia: ' + (error.message || 'Error desconocido'));
     } finally {
       setLoading(false);
     }
@@ -76,9 +75,13 @@ const NewsForm = ({ onSubmit, onClose }) => {
 
   return (
     <div className="container mt-4">
-      <h2 className="text-center mb-4"><FaRegNewspaper /> Crear Noticia</h2>
+      <h2 className="text-center mb-4">
+        <FaRegNewspaper /> Crear Noticia
+      </h2>
+
       <form onSubmit={handleSubmit} className="border p-4 shadow rounded bg-light">
 
+        {/* Título */}
         <div className="mb-3">
           <label className="form-label"><FaHeading /> Título</label>
           <input
@@ -92,6 +95,7 @@ const NewsForm = ({ onSubmit, onClose }) => {
           {errors.title && <div className="invalid-feedback">{errors.title}</div>}
         </div>
 
+        {/* Descripción */}
         <div className="mb-3">
           <label className="form-label"><FaAlignLeft /> Descripción</label>
           <textarea
@@ -105,6 +109,7 @@ const NewsForm = ({ onSubmit, onClose }) => {
           {errors.description && <div className="invalid-feedback">{errors.description}</div>}
         </div>
 
+        {/* Imagen */}
         <div className="mb-3">
           <label className="form-label"><FaImage /> URL de Imagen (opcional)</label>
           <input
@@ -113,18 +118,30 @@ const NewsForm = ({ onSubmit, onClose }) => {
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleChange}
+            placeholder="https://ejemplo.com/imagen.jpg"
           />
           {errors.imageUrl && <div className="invalid-feedback">{errors.imageUrl}</div>}
         </div>
 
+        {/* Botones */}
         <div className="d-flex justify-content-between">
-          <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancelar
           </button>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={loading}
+          >
             {loading ? 'Publicando...' : 'Publicar Noticia'}
           </button>
         </div>
+
       </form>
     </div>
   );

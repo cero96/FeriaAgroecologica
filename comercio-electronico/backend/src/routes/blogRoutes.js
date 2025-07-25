@@ -4,12 +4,14 @@ import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
-// GET /api/blogs - sin token para listar blogs
+// GET /api/blogs - público, sin token para listar blogs
 router.get('/', blogController.getAllBlogPosts);
 
-// POST, PUT, DELETE con token para modificaciones
+// GET /api/blogs/:id - público, sin token para obtener blog por ID
+router.get('/:id', blogController.getBlogPostById);
+
+// POST, PUT, DELETE con token para crear, actualizar y eliminar blogs
 router.post('/', verifyToken, blogController.createBlogPost);
-router.get('/:id', verifyToken, blogController.getBlogPostById);
 router.put('/:id', verifyToken, blogController.updateBlogPost);
 router.delete('/:id', verifyToken, blogController.deleteBlogPost);
 
