@@ -134,25 +134,29 @@ const Dashboard = () => {
       <main className="container my-4 flex-grow-1">
         <DashboardActions onCreateProduct={handleCreate} onCreateNews={handleCreateNews} />
 
-        {/* Panel dividido lado a lado */}
-        <div className="d-flex flex-column flex-lg-row gap-4" style={{ height: '75vh' }}>
+        {/* Panel dividido lado a lado con diseño responsivo */}
+        <div className="row g-4" style={{ height: 'auto' }}>
           {/* Productos */}
-          <section className="flex-fill d-flex flex-column bg-white rounded shadow-sm p-4 overflow-auto">
-            <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Productos</h3>
-            <ProductList
-              products={products}
-              loading={loadingProducts}
-              error={errorProducts}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </section>
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Productos</h3>
+              <ProductList
+                products={products}
+                loading={loadingProducts}
+                error={errorProducts}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </section>
+          </div>
 
           {/* Historias */}
-          <section className="flex-fill d-flex flex-column bg-white rounded shadow-sm p-4 overflow-auto">
-            <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Historias</h3>
-            <BlogCrud />
-          </section>
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Historias</h3>
+              <BlogCrud />
+            </section>
+          </div>
         </div>
       </main>
 

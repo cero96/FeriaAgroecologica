@@ -25,7 +25,8 @@ const Home = () => {
   };
 
   const handleConfirmAdd = (quantity) => {
-    addToCart({ ...selectedProduct, quantity });
+    addToCart(selectedProduct, quantity); // <-- corrección aquí
+    setSelectedProduct(null); // <-- cerrar modal después de añadir
   };
 
   return (
@@ -38,26 +39,25 @@ const Home = () => {
         }
 
         body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #2e4d25;
-  background-image: url("public/Images/4.png");
-  background-repeat: no-repeat;
-  background-size: 110% 100%; /* Imagen más grande y alta */
-  background-position: center;
-  animation: moveBg 20s ease-in-out infinite alternate;
-  background-color: #fff; /* Fondo de respaldo */
-  background-attachment: fixed;
-}
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #2e4d25;
+          background-image: url("public/Images/4.png");
+          background-repeat: no-repeat;
+          background-size: 110% 100%; /* Imagen más grande y alta */
+          background-position: center;
+          animation: moveBg 20s ease-in-out infinite alternate;
+          background-color: #fff; /* Fondo de respaldo */
+          background-attachment: fixed;
+        }
 
-@keyframes moveBg {
-  0% {
-    background-position-x: 100%;
-  }
-  100% {
-    background-position-x: 0%;
-  }
-}
-
+        @keyframes moveBg {
+          0% {
+            background-position-x: 100%;
+          }
+          100% {
+            background-position-x: 0%;
+          }
+        }
 
         .hero {
           padding: 5rem 1rem 2rem;

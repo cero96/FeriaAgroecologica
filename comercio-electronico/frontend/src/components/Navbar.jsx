@@ -47,7 +47,7 @@ const Navbar = () => {
       <div className="container-fluid" style={{ position: 'relative', zIndex: 1 }}>
         <Link className="navbar-brand text-white fw-bold" to="/">🌱 FERIA AGROECOLÓGICA</Link>
 
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
 
@@ -65,11 +65,9 @@ const Navbar = () => {
             {token && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link text-white" to="/dashboard">Crear Producto</Link>
+                  <Link className="nav-link text-white" to="/dashboard">Dashboard</Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="/blog">Crear Historia</Link>
-                </li>
+
               </>
             )}
           </ul>
