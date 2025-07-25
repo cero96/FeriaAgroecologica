@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Particule from '../components/Particule.jsx'; // Asegúrate que la ruta sea correcta
 
 function BlogCard({ post }) {
   return (
@@ -49,17 +50,23 @@ export default function BlogPage() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="container mt-4">
-      <h1>Blog Posts</h1>
-      {posts.length === 0 ? (
-        <p>No hay blog posts disponibles.</p>
-      ) : (
-        <ul className="list-unstyled">
-          {posts.map(post => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </ul>
-      )}
-    </div>
+    <>
+      {/* Fondo de partículas */}
+      <Particule />
+
+      {/* Contenedor principal con z-index para estar encima */}
+      <div className="container mt-4" style={{ position: 'relative', zIndex: 1 }}>
+        <h1>Blog Posts</h1>
+        {posts.length === 0 ? (
+          <p>No hay blog posts disponibles.</p>
+        ) : (
+          <ul className="list-unstyled">
+            {posts.map(post => (
+              <BlogCard key={post.id} post={post} />
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 }

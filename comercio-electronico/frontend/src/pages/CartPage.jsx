@@ -8,18 +8,29 @@ export default function CartPage() {
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoice, setInvoice] = useState(null);
 
-  // Cambiar cantidad
   function handleQuantityChange(id, value) {
+    // Permite valores vacíos para que input no se trabe
+    if (value === "") {
+      // Opcional: si quieres puedes poner cantidad 1 si se borra input
+      // Aquí solo dejamos el input vacío sin actualizar estado
+      setCart(prev =>
+        prev.map(item =>
+          item.id === id ? { ...item, quantity: "" } : item
+        )
+      );
+      return;
+    }
+
     const qty = parseInt(value, 10);
     if (isNaN(qty) || qty < 1) return;
-    setCart((prev) =>
-      prev.map((item) =>
+
+    setCart(prev =>
+      prev.map(item =>
         item.id === id ? { ...item, quantity: qty } : item
       )
     );
   }
 
-  // Eliminar producto
   function handleRemove(id) {
     removeFromCart(id);
   }
@@ -27,7 +38,16 @@ export default function CartPage() {
   async function handleCheckout() {
     setLoading(true);
     setMessage("");
+
     try {
+      // Validar que todas las cantidades sean números válidos antes de continuar
+      const invalidQuantity = cart.some(item => !item.quantity || item.quantity < 1);
+      if (invalidQuantity) {
+        setMessage("❌ Por favor, asegúrate que todas las cantidades sean válidas.");
+        setLoading(false);
+        return;
+      }
+
       const invoiceData = {
         invoiceId: Math.floor(Math.random() * 1000000),
         date: new Date().toLocaleString(),
@@ -42,6 +62,7 @@ export default function CartPage() {
     } catch (error) {
       setMessage("❌ Error en la compra");
     }
+
     setLoading(false);
   }
 
@@ -108,7 +129,6 @@ export default function CartPage() {
 
       {message && <p className="mt-3">{message}</p>}
 
-      {/* Modal Bootstrap para la factura */}
       {showInvoice && invoice && (
         <div
           className="modal fade show"
@@ -119,15 +139,13 @@ export default function CartPage() {
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">
-                  🧾 Factura #{invoice.invoiceId}
-                </h5>
+                <h5 className="modal-title">🧾 Factura #{invoice.invoiceId}</h5>
                 <button
                   type="button"
                   className="btn-close"
                   onClick={() => setShowInvoice(false)}
                   aria-label="Cerrar"
-                ></button>
+                />
               </div>
               <div className="modal-body">
                 <p>
