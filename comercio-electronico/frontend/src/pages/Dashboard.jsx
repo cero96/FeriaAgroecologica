@@ -1,64 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import ProductForm from '../components/ProductForm';
-import NewsForm from '../components/NewsForm';
 import { apiFetch } from '../services/api';
+import BlogCrud from '../components/BlogCrud';
+import ProductForm from '../components/ProductForm';
+import NewsModal from '../components/NewsModal';
+import DashboardHeader from '../components/DashboardHeader';
+import DashboardActions from '../components/DashboardActions';
+import ProductList from '../components/ProductList.jsx';
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [showNewsForm, setShowNewsForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [errorProducts, setErrorProducts] = useState('');
 
-  // Cargar productos
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await apiFetch('/products');
-      setProducts(data);
-    } catch (err) {
-      setError('Error al cargar productos');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const user = JSON.parse(localStorage.getItem('user'));
+  const currentUserId = user?.id;
+  const tenantId = user?.tenantId;
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const fetchProducts = async () => {
+    setLoadingProducts(true);
+    setErrorProducts('');
+    try {
+      const data = await apiFetch('/products');
+      const filtered = data.filter(p => p.userId === currentUserId);
+      setProducts(filtered);
+    } catch (err) {
+      setErrorProducts('Error al cargar productos');
+      console.error(err);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
   const handleCreate = () => {
     setEditingProduct(null);
-    setShowNewsForm(false);
     setShowForm(true);
+    setShowNewsForm(false);
   };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
-    setShowNewsForm(false);
     setShowForm(true);
+    setShowNewsForm(false);
   };
 
   const handleCreateNews = () => {
     setShowForm(false);
     setShowNewsForm(true);
-    const modal = new bootstrap.Modal(document.getElementById('newsModal'));
-    modal.show();
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Está seguro de eliminar este producto?')) return;
-
-    try {
-      await apiFetch(`/products/${id}`, { method: 'DELETE' });
-      setProducts(products.filter((p) => p.id !== id));
-    } catch (err) {
-      alert('Error al eliminar producto');
-      console.error(err);
-    }
+    setTimeout(() => {
+      const modal = new window.bootstrap.Modal(document.getElementById('newsModal'));
+      modal.show();
+    }, 100);
   };
 
   const handleFormSubmit = async (productData) => {
@@ -68,7 +66,7 @@ export default function Dashboard() {
           method: 'PUT',
           body: JSON.stringify(productData),
         });
-        setProducts(products.map(p => p.id === updated.id ? updated : p));
+        setProducts(products.map(p => (p.id === updated.id ? updated : p)));
       } else {
         const created = await apiFetch('/products', {
           method: 'POST',
@@ -93,25 +91,35 @@ export default function Dashboard() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          tenantId: Number(newsData.tenantId),
-          userId: Number(newsData.userId),
+          tenantId,
+          userId: currentUserId,
           title: newsData.title,
           description: newsData.description,
           imageUrl: newsData.imageUrl || null,
         }),
       });
-
       if (!res.ok) {
         const errData = await res.json();
         throw new Error(errData.message || 'Error desconocido');
       }
-
-      alert('Noticia creada correctamente');
-      setShowNewsForm(false);
-      const modal = bootstrap.Modal.getInstance(document.getElementById('newsModal'));
+      alert('Historia creada correctamente');
+      const modal = window.bootstrap.Modal.getInstance(document.getElementById('newsModal'));
       modal.hide();
+      setShowNewsForm(false);
     } catch (error) {
-      alert('Error al crear la noticia: ' + (error.message || error));
+      alert('Error al crear la historia: ' + (error.message || error));
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Está seguro de eliminar este producto?')) return;
+
+    try {
+      await apiFetch(`/products/${id}`, { method: 'DELETE' });
+      setProducts(products.filter(p => p.id !== id));
+    } catch (err) {
+      alert('Error al eliminar producto');
+      console.error(err);
     }
   };
 
@@ -121,49 +129,38 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Dashboard de Productos</h2>
-        <button className="btn btn-danger" onClick={handleLogout}>Cerrar sesión</button>
-      </div>
+    <div className="min-vh-100 bg-light d-flex flex-column">
+      <DashboardHeader onLogout={handleLogout} />
+      <main className="container my-4 flex-grow-1">
+        <DashboardActions onCreateProduct={handleCreate} onCreateNews={handleCreateNews} />
 
-      <div className="mb-3 d-flex gap-2">
-        <button className="btn btn-primary" onClick={handleCreate}>Nuevo Producto</button>
-        <button className="btn btn-secondary" onClick={handleCreateNews}>Crear Historia</button>
-      </div>
-
-      {loading && <p>Cargando productos...</p>}
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      <div className="row">
-        {products.length === 0 && !loading && <p>No hay productos.</p>}
-        {products.map((p) => (
-          <div key={p.id} className="col-md-4 mb-3">
-            <div className="card h-100 shadow-sm">
-              {p.photoUrl && (
-                <img
-                  src={p.photoUrl}
-                  className="card-img-top"
-                  alt={p.name}
-                  style={{ maxHeight: '200px', objectFit: 'cover' }}
-                />
-              )}
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{p.name}</h5>
-                <p className="card-text flex-grow-1">{p.description}</p>
-                <p><b>Cantidad:</b> {p.quantityAvailable}</p>
-                <p><b>Contacto:</b> {p.contactNumber || '-'}</p>
-                <div className="d-flex justify-content-between mt-auto">
-                  <button className="btn btn-sm btn-outline-success" onClick={() => handleEdit(p)}>Editar</button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(p.id)}>Eliminar</button>
-                </div>
-              </div>
-            </div>
+        {/* Panel dividido lado a lado con diseño responsivo */}
+        <div className="row g-4" style={{ height: 'auto' }}>
+          {/* Productos */}
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Productos</h3>
+              <ProductList
+                products={products}
+                loading={loadingProducts}
+                error={errorProducts}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </section>
           </div>
-        ))}
-      </div>
 
-      {/* Formulario productos */}
+          {/* Historias */}
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Historias</h3>
+              <BlogCrud />
+            </section>
+          </div>
+        </div>
+      </main>
+
+      {/* Formularios y modales */}
       {showForm && (
         <ProductForm
           product={editingProduct}
@@ -172,29 +169,13 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Modal para NewsForm */}
-      <div className="modal fade" id="newsModal" tabIndex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
-        <div className="modal-dialog modal-lg modal-dialog-scrollable">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="newsModalLabel">Crear Historia</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div className="modal-body">
-              {showNewsForm && (
-                <NewsForm
-                  onSubmit={handleNewsFormSubmit}
-                  onClose={() => {
-                    setShowNewsForm(false);
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('newsModal'));
-                    modal.hide();
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+      <NewsModal
+        show={showNewsForm}
+        onSubmit={handleNewsFormSubmit}
+        onCancel={() => setShowNewsForm(false)}
+      />
     </div>
   );
-}
+};
+
+export default Dashboard;

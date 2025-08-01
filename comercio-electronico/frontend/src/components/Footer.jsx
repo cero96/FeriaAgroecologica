@@ -32,7 +32,7 @@ const Footer = () => (
       <div style={{ flex: '1 1 200px' }}>
         <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <MdLocationOn color="#e53935" size={20} />
-          Calle Siempre Viva #123, Ciudad Verde
+          La Floresta - Galavis 237, Quito 170143
         </p>
         <p style={{ margin: '0.3rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <FaWhatsapp color="#000" size={20} />
@@ -47,7 +47,7 @@ const Footer = () => (
       <div style={{ flex: '1 1 1px' }}>
         <p style={{ marginBottom: '0.5rem',fontSize:"1.3rem", fontWeight: '600,' }}>Síguenos:</p>
         <div style={{ display: 'flex', gap: '1.5rem', fontSize: '2rem' }}>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
+          <a href="https://www.facebook.com/people/La-Floresta-Mercado-Agroecol%C3%B3gico/100057415901608/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>
             <FaFacebookF />
           </a>
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: '#fff' }}>

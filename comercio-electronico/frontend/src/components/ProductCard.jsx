@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 
-const ProductCard = ({ product, onAdd }) => {
-  const [localStock, setLocalStock] = useState(product.quantityAvailable); // 🔥 Stock local
+const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
+  if (!product) return null;
+
+  const [localStock, setLocalStock] = useState(product.quantityAvailable);
 
   const handleAddToCart = () => {
     if (localStock > 0) {
-      onAdd(product, (addedQuantity) => {
-        // 🔥 Actualiza stock local cuando se agrega
-        setLocalStock((prevStock) => prevStock - addedQuantity);
-      });
+      if (onAdd) {
+        // Pasamos el producto y un callback que resta la cantidad agregada
+        onAdd(product, (addedQuantity = 1) => {
+          setLocalStock((prevStock) => prevStock - addedQuantity);
+        });
+      }
     } else {
       alert("🚫 Sin stock disponible");
     }
@@ -19,7 +23,7 @@ const ProductCard = ({ product, onAdd }) => {
       style={{
         position: "relative",
         width: "300px",
-        border: "3px solid #ffa500", // 🔥 contorno fuego
+        border: "3px solid #ffa500",
         borderRadius: "16px",
         padding: "16px",
         margin: "16px",
@@ -44,7 +48,6 @@ const ProductCard = ({ product, onAdd }) => {
         e.currentTarget.style.transform = "scale(1)";
       }}
     >
-      {/* Overlay oscuro para mejorar contraste */}
       <div
         style={{
           position: "absolute",
@@ -77,18 +80,17 @@ const ProductCard = ({ product, onAdd }) => {
             margin: "8px 0",
             fontSize: "1.4em",
             fontWeight: "700",
-            textShadow: "2px 2px 4px rgba(0,0,0,0.7)", // 🖤 sombra en texto
+            textShadow: "2px 2px 4px rgba(0,0,0,0.7)",
           }}
         >
           {product.name}
         </h2>
 
-        {/* 💰 Precio destacado */}
         <p
           style={{
             fontSize: "1.2em",
             fontWeight: "bold",
-            color: "#ffd700", // 🟡 dorado
+            color: "#ffd700",
             textShadow: "1px 1px 4px rgba(0,0,0,0.7)",
             margin: "4px 0",
           }}
@@ -105,6 +107,7 @@ const ProductCard = ({ product, onAdd }) => {
         >
           {product.description}
         </p>
+
         <p
           style={{
             fontWeight: "bold",
@@ -114,39 +117,67 @@ const ProductCard = ({ product, onAdd }) => {
         >
           📦 Disponibles: {localStock}
         </p>
+
         <p
           style={{
             margin: "6px 0",
             textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
           }}
         >
-          📞 Contacto: {product.user.name} ({product.user.phone})
+          📞 Contacto: {product.user?.name || '-'} ({product.user?.phone || '-'})
         </p>
-        <button
-          style={{
-            border: "none",
-            backgroundColor: "#000",
-            color: "white",
-            padding: "12px 20px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            transition: "background-color 0.3s, transform 0.2s",
-            fontSize: "1em",
-            fontWeight: "bold",
-            marginTop: "12px",
-          }}
-          onClick={handleAddToCart}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = "#ff4500"; // 🔥 hover fuego
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = "#000";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          🛒 Agregar al carrito
-        </button>
+
+        {/* Botón Agregar al carrito, solo si onAdd existe */}
+        {onAdd && (
+          <button
+            style={{
+              border: "none",
+              backgroundColor: "#000",
+              color: "white",
+              padding: "12px 20px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              transition: "background-color 0.3s, transform 0.2s",
+              fontSize: "1em",
+              fontWeight: "bold",
+              marginTop: "12px",
+              width: "100%",
+            }}
+            onClick={handleAddToCart}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#ff4500";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "#000";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            🛒 Agregar al carrito
+          </button>
+        )}
+
+        {/* Botones Editar y Eliminar, solo si onEdit y onDelete existen */}
+        {(onEdit || onDelete) && (
+          <div className="d-flex gap-2 mt-3 justify-content-center">
+            {onEdit && (
+              <button
+                className="btn btn-sm btn-primary flex-grow-1"
+                onClick={() => onEdit(product)}
+              >
+                Editar
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="btn btn-sm btn-danger flex-grow-1"
+                onClick={() => onDelete(product.id)}
+              >
+                Eliminar
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

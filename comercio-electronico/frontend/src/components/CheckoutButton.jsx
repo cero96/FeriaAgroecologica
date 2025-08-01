@@ -13,11 +13,23 @@ const CheckoutButton = () => {
         })),
       };
 
+      // Enviar la orden
       await axios.post('/api/orders', orderData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+
+      // Reducir el stock de cada producto
+      await Promise.all(items.map(async (item) => {
+        await axios.put(`/api/products/${item.id}`, {
+          quantityAvailable: item.quantityAvailable - item.quantity
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+      }));
 
       alert('¡Compra realizada con éxito!');
       clearCart();
