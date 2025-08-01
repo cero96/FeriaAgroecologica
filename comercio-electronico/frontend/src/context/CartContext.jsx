@@ -8,6 +8,8 @@ export function CartProvider({ children }) {
   const addToCart = (product) => {
     const quantityToAdd = Number(product.quantity) || 1;
 
+    console.log("🚀 Agregando al carrito:", product); // Para depurar
+
     setItems((prevItems) => {
       const existing = prevItems.find((item) => item.id === product.id);
       if (existing) {

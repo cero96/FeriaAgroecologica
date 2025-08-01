@@ -8,7 +8,8 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
   const handleAddToCart = () => {
     if (localStock > 0) {
       if (onAdd) {
-        onAdd(product, (addedQuantity) => {
+        // Pasamos el producto y un callback que resta la cantidad agregada
+        onAdd(product, (addedQuantity = 1) => {
           setLocalStock((prevStock) => prevStock - addedQuantity);
         });
       }

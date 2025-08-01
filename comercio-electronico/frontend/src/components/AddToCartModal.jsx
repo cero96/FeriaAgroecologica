@@ -1,40 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Modal, Button, Form, Image } from "react-bootstrap";
+import React, { useEffect, useRef } from "react";
+import { Modal, Button, Image } from "react-bootstrap";
 import { BsX } from "react-icons/bs";
 
 export default function AddToCartModal({ product, onConfirm, onClose }) {
-  const [quantity, setQuantity] = useState(1);
-  const [error, setError] = useState("");
-  const [currentStock, setCurrentStock] = useState(product.quantityAvailable);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setQuantity(1);
-    setError("");
-    setCurrentStock(product.quantityAvailable);
     inputRef.current?.focus();
   }, [product]);
 
   if (!product) return null;
 
   const handleAdd = () => {
-    if (quantity >= 1 && quantity <= currentStock) {
-      const newStock = currentStock - quantity;
-      setCurrentStock(newStock);
-      onConfirm({ ...product, quantity: Number(quantity) });
+    if (product.quantityAvailable >= 1) {
+      // Siempre se agrega solo 1 unidad
+      onConfirm({ ...product, quantity: 1 });
       onClose();
     } else {
-      setError(`Ingrese una cantidad válida (1 - ${currentStock})`);
-    }
-  };
-
-  const handleQuantityChange = (e) => {
-    const val = Number(e.target.value);
-    setQuantity(val);
-    if (val < 1 || val > currentStock) {
-      setError(`Ingrese una cantidad válida (1 - ${currentStock})`);
-    } else {
-      setError("");
+      alert("🚫 Sin stock disponible");
     }
   };
 
@@ -67,30 +50,21 @@ export default function AddToCartModal({ product, onConfirm, onClose }) {
         />
         <h5 className="fw-bold">{product.name}</h5>
         <p className="text-muted">
-          Stock disponible: <strong>{currentStock}</strong>
+          Stock disponible: <strong>{product.quantityAvailable}</strong>
         </p>
-
-        <Form.Group controlId="quantity-input" className="text-start mt-3">
-          <Form.Label>Cantidad a agregar:</Form.Label>
-          <Form.Control
-            type="number"
-            min={1}
-            max={currentStock}
-            value={quantity}
-            ref={inputRef}
-            onChange={handleQuantityChange}
-            isInvalid={!!error}
-          />
-          <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
-        </Form.Group>
+        <p>¿Deseas agregar  al carrito?</p>
       </Modal.Body>
 
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
           Cancelar
         </Button>
-        <Button variant="success" onClick={handleAdd} disabled={!!error}>
-          Agregar
+        <Button
+          variant="success"
+          onClick={handleAdd}
+          disabled={product.quantityAvailable < 1}
+        >
+          Agregar 
         </Button>
       </Modal.Footer>
     </Modal>

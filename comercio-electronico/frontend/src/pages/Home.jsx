@@ -24,9 +24,10 @@ const Home = () => {
     setSelectedProduct(null);
   };
 
+  // Aquí está la corrección: pasamos el objeto con la cantidad incluida
   const handleConfirmAdd = (quantity) => {
-    addToCart(selectedProduct, quantity); // <-- corrección aquí
-    setSelectedProduct(null); // <-- cerrar modal después de añadir
+    addToCart({ ...selectedProduct, quantity });
+    setSelectedProduct(null);
   };
 
   return (
