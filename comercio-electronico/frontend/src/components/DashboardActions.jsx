@@ -5,8 +5,8 @@ const DashboardActions = ({ onCreateProduct, onCreateNews }) => (
     {/* Botón Nuevo Producto a la izquierda */}
     <button className="btn btn-primary shadow-sm" onClick={onCreateProduct}>Nuevo Producto</button>
 
-    {/* Botón Crear Historia a la derecha */}
-    <button className="btn btn-primary shadow-sm ms-auto" onClick={onCreateNews}>Crear Historia</button>
+    {/* Botón Nueva Historia a la derecha */}
+    <button className="btn btn-primary shadow-sm ms-auto" onClick={onCreateNews}>Nueva Historia</button>
   </div>
 );
 

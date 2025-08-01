@@ -1,26 +1,13 @@
 // src/components/Navbar.jsx
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const [userName, setUserName] = useState(null);
   const { items: cart } = useCart();
   const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUserName(decoded.name || decoded.email || 'Usuario');
-      } catch (error) {
-        console.error("Error al decodificar token:", error);
-      }
-    }
-  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -63,19 +50,15 @@ const Navbar = () => {
               <Link className="nav-link text-white" to="/blog">Blog</Link>
             </li>
             {token && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="/dashboard">Dashboard</Link>
-                </li>
-
-              </>
+              <li className="nav-item">
+                <Link className="nav-link text-white" to="/dashboard">Dashboard</Link>
+              </li>
             )}
           </ul>
 
           <ul className="navbar-nav ms-auto align-items-center">
             {token ? (
               <>
-                <li className="nav-item text-white me-3">👤 {userName}</li>
                 <li className="nav-item">
                   <button className="btn btn-outline-light fw-bold" onClick={handleLogout}>Cerrar sesión</button>
                 </li>

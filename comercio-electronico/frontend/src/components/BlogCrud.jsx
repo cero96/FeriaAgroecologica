@@ -113,9 +113,7 @@ const BlogCrud = () => {
   return (
     <div className="container p-3">
       <h2 className="mb-3">Gestión de Historias</h2>
-      <button className="btn btn-primary mb-3" onClick={() => openForm(null)}>
-        Crear Nueva Historia
-      </button>
+
 
       {loading && <p>Cargando historias...</p>}
       {error && <p className="text-danger">{error}</p>}
