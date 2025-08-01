@@ -1,13 +1,15 @@
-// backend/src/app.js
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+
 import usersRoutes from './routes/usersRoutes.js';
 import productsRouter from './routes/products.js';
 import publicRoutes from './routes/public.js';
+import orderRoutes from './routes/orders.js';
+import blogRoutes from './routes/blogRoutes.js'; // <-- Importa aquí
+
 const app = express();
 
-// Middleware
 app.use(morgan('dev'));
 app.use(express.json());
 
@@ -17,11 +19,11 @@ app.use(cors({
   credentials: true,
 }));
 
-// Rutas
 app.use('/api/users', usersRoutes);
 app.use('/api/products', productsRouter);
 app.use('/api/public', publicRoutes);
-
+app.use('/api/orders', orderRoutes);
+app.use('/api/blogs', blogRoutes); // <-- Añade esta línea para blogs
 
 // Middleware para manejar errores generales
 app.use((err, req, res, next) => {

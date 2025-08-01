@@ -1,65 +1,73 @@
 import React, { useEffect, useState } from 'react';
-import ProductForm from '../components/ProductForm';
 import { apiFetch } from '../services/api';
+import BlogCrud from '../components/BlogCrud';
+import ProductForm from '../components/ProductForm';
+import NewsModal from '../components/NewsModal';
+import DashboardHeader from '../components/DashboardHeader';
+import DashboardActions from '../components/DashboardActions';
+import ProductList from '../components/ProductList.jsx';
 
-export default function Dashboard() {
+const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showNewsForm, setShowNewsForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [errorProducts, setErrorProducts] = useState('');
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await apiFetch('/products');
-      setProducts(data);
-    } catch (err) {
-      setError('Error al cargar productos');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const user = JSON.parse(localStorage.getItem('user'));
+  const currentUserId = user?.id;
+  const tenantId = user?.tenantId;
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const fetchProducts = async () => {
+    setLoadingProducts(true);
+    setErrorProducts('');
+    try {
+      const data = await apiFetch('/products');
+      const filtered = data.filter(p => p.userId === currentUserId);
+      setProducts(filtered);
+    } catch (err) {
+      setErrorProducts('Error al cargar productos');
+      console.error(err);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
   const handleCreate = () => {
     setEditingProduct(null);
     setShowForm(true);
+    setShowNewsForm(false);
   };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
     setShowForm(true);
+    setShowNewsForm(false);
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Está seguro de eliminar este producto?')) return;
-
-    try {
-      await apiFetch(`/products/${id}`, { method: 'DELETE' });
-      setProducts(products.filter((p) => p.id !== id));
-    } catch (err) {
-      alert('Error al eliminar producto');
-      console.error(err);
-    }
+  const handleCreateNews = () => {
+    setShowForm(false);
+    setShowNewsForm(true);
+    setTimeout(() => {
+      const modal = new window.bootstrap.Modal(document.getElementById('newsModal'));
+      modal.show();
+    }, 100);
   };
 
   const handleFormSubmit = async (productData) => {
     try {
       if (editingProduct) {
-        // Editar
         const updated = await apiFetch(`/products/${editingProduct.id}`, {
           method: 'PUT',
           body: JSON.stringify(productData),
         });
-        setProducts(products.map(p => p.id === updated.id ? updated : p));
+        setProducts(products.map(p => (p.id === updated.id ? updated : p)));
       } else {
-        // Crear
         const created = await apiFetch('/products', {
           method: 'POST',
           body: JSON.stringify(productData),
@@ -73,51 +81,86 @@ export default function Dashboard() {
     }
   };
 
+  const handleNewsFormSubmit = async (newsData) => {
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch('http://localhost:3000/api/blogs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tenantId,
+          userId: currentUserId,
+          title: newsData.title,
+          description: newsData.description,
+          imageUrl: newsData.imageUrl || null,
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.message || 'Error desconocido');
+      }
+      alert('Historia creada correctamente');
+      const modal = window.bootstrap.Modal.getInstance(document.getElementById('newsModal'));
+      modal.hide();
+      setShowNewsForm(false);
+    } catch (error) {
+      alert('Error al crear la historia: ' + (error.message || error));
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Está seguro de eliminar este producto?')) return;
+
+    try {
+      await apiFetch(`/products/${id}`, { method: 'DELETE' });
+      setProducts(products.filter(p => p.id !== id));
+    } catch (err) {
+      alert('Error al eliminar producto');
+      console.error(err);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = '/login';
   };
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Dashboard de Productos</h2>
-        <button className="btn btn-danger" onClick={handleLogout}>Cerrar sesión</button>
-      </div>
+    <div className="min-vh-100 bg-light d-flex flex-column">
+      <DashboardHeader onLogout={handleLogout} />
+      <main className="container my-4 flex-grow-1">
+        <DashboardActions onCreateProduct={handleCreate} onCreateNews={handleCreateNews} />
 
-      <button className="btn btn-primary mb-3" onClick={handleCreate}>Nuevo Producto</button>
-
-      {loading && <p>Cargando productos...</p>}
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      <div className="row">
-        {products.length === 0 && !loading && <p>No hay productos.</p>}
-        {products.map((p) => (
-          <div key={p.id} className="col-md-4 mb-3">
-            <div className="card h-100 shadow-sm">
-              {p.photoUrl && (
-                <img
-                  src={p.photoUrl}
-                  className="card-img-top"
-                  alt={p.name}
-                  style={{ maxHeight: '200px', objectFit: 'cover' }}
-                />
-              )}
-              <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{p.name}</h5>
-                <p className="card-text flex-grow-1">{p.description}</p>
-                <p><b>Cantidad:</b> {p.quantityAvailable}</p>
-                <p><b>Contacto:</b> {p.contactNumber || '-'}</p>
-                <div className="d-flex justify-content-between mt-auto">
-                  <button className="btn btn-sm btn-outline-success" onClick={() => handleEdit(p)}>Editar</button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(p.id)}>Eliminar</button>
-                </div>
-              </div>
-            </div>
+        {/* Panel dividido lado a lado con diseño responsivo */}
+        <div className="row g-4" style={{ height: 'auto' }}>
+          {/* Productos */}
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Productos</h3>
+              <ProductList
+                products={products}
+                loading={loadingProducts}
+                error={errorProducts}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </section>
           </div>
-        ))}
-      </div>
 
+          {/* Historias */}
+          <div className="col-12 col-lg-6">
+            <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Historias</h3>
+              <BlogCrud />
+            </section>
+          </div>
+        </div>
+      </main>
+
+      {/* Formularios y modales */}
       {showForm && (
         <ProductForm
           product={editingProduct}
@@ -125,6 +168,14 @@ export default function Dashboard() {
           onClose={() => setShowForm(false)}
         />
       )}
+
+      <NewsModal
+        show={showNewsForm}
+        onSubmit={handleNewsFormSubmit}
+        onCancel={() => setShowNewsForm(false)}
+      />
     </div>
   );
-}
+};
+
+export default Dashboard;

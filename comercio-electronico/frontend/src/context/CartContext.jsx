@@ -1,55 +1,40 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cart, setCart] = useState(() => {
-    const stored = localStorage.getItem('cart');
-    return stored ? JSON.parse(stored) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+  const [items, setItems] = useState([]);
 
   const addToCart = (product) => {
-    setCart((prev) => {
-      const existing = prev.find(item => item.id === product.id);
-      const requestedQuantity = product.quantity;
+    const quantityToAdd = Number(product.quantity) || 1;
 
+    console.log("🚀 Agregando al carrito:", product); // Para depurar
+
+    setItems((prevItems) => {
+      const existing = prevItems.find((item) => item.id === product.id);
       if (existing) {
-        const newQuantity = existing.quantity + requestedQuantity;
-
-        if (newQuantity > product.quantityAvailable) {
-          alert(`Solo hay ${product.quantityAvailable} unidades disponibles`);
-          return prev;
-        }
-
-        return prev.map(item =>
+        return prevItems.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: newQuantity }
+            ? { ...item, quantity: item.quantity + quantityToAdd }
             : item
         );
       }
-
-      // Si es un producto nuevo en el carrito
-      if (requestedQuantity > product.quantityAvailable) {
-        alert(`Solo hay ${product.quantityAvailable} unidades disponibles`);
-        return prev;
-      }
-
-      return [...prev, { ...product }];
+      return [...prevItems, { ...product, quantity: quantityToAdd }];
     });
   };
 
-  const removeFromCart = (id) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+  const removeFromCart = (productId) => {
+    setItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => setItems([]);
+
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider
+      value={{ items, addToCart, removeFromCart, clearCart, total, setItems }}
+    >
       {children}
     </CartContext.Provider>
   );

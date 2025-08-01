@@ -1,31 +1,34 @@
-// src/pages/Productores.jsx
 import React from 'react';
-import ProductorCarousel from '../components/ProductorCarousel';
+import ProductorCarousel from '../components/ProductorCarrousel';
+import Particule from '../components/Particule'; // importa tu componente Particule
 
 const productores = [
   {
     nombre: 'María Gómez',
-    descripcion: 'Productora de hortalizas orgánicas en la región andina.',
-    imagen: 'https://via.placeholder.com/600x400?text=Maria+Gomez'
+    descripcion: 'Productora de lacteos.',
+    imagen: '/Images/Productores/2.png'
   },
   {
     nombre: 'Carlos Pérez',
-    descripcion: 'Apicultor especializado en miel ecológica.',
-    imagen: 'https://via.placeholder.com/600x400?text=Carlos+Perez'
+    descripcion: 'Agricultor especializado en frutas.',
+    imagen: '/Images/Productores/3.png'
   },
   {
     nombre: 'Ana Torres',
-    descripcion: 'Cultiva café de altura con prácticas sostenibles.',
-    imagen: 'https://via.placeholder.com/600x400?text=Ana+Torres'
-  }
+    descripcion: 'Cultiva desde los 5 años',
+    imagen: '/Images/Productores/1.png'
+  },
 ];
 
 const Productores = () => {
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4 text-success">Nuestros Productores</h2>
-      <ProductorCarousel productores={productores} />
-    </div>
+    <>
+      <Particule /> {/* Partículas de fondo */}
+      <div className="container mt-5" style={{ marginBottom: '60px', position: 'relative', zIndex: 1 }}>
+        <h2 className="text-center mb-4 text-success">Nuestros Productores</h2>
+        <ProductorCarousel productores={productores} />
+      </div>
+    </>
   );
 };
 

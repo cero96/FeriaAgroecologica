@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, photoUrl, quantityAvailable, contactNumber } = req.body;
+    const { name, description, photoUrl, quantityAvailable, contactNumber, price } = req.body;
     const { tenantId, userId } = req;
 
     const newProduct = await prisma.product.create({
@@ -14,6 +14,7 @@ export const createProduct = async (req, res) => {
         photoUrl,
         quantityAvailable,
         contactNumber,
+        price, // 👈 Añadido aquí
         tenantId,
         userId,
       },
@@ -28,7 +29,7 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const { name, description, photoUrl, quantityAvailable, contactNumber } = req.body;
+    const { name, description, photoUrl, quantityAvailable, contactNumber, price } = req.body;
     const { tenantId } = req;
 
     const existing = await prisma.product.findUnique({ where: { id } });
@@ -44,6 +45,7 @@ export const updateProduct = async (req, res) => {
         photoUrl,
         quantityAvailable,
         contactNumber,
+        price, // 👈 Añadido aquí
       },
     });
 
@@ -53,6 +55,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
+
 export const getProducts = async (req, res) => {
   try {
     const { tenantId } = req;
@@ -60,6 +63,16 @@ export const getProducts = async (req, res) => {
     const products = await prisma.product.findMany({
       where: { tenantId },
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        photoUrl: true,
+        quantityAvailable: true,
+        contactNumber: true,
+        price: true,          // 👈 Incluye el precio en la respuesta
+        createdAt: true,
+      },
     });
 
     res.json(products);
