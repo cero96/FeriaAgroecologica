@@ -1,20 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-// Crear historia
+// Crear blog (historia)
 export const createBlogPost = async (req, res) => {
   try {
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
     const userId = req.userId; // viene del middleware
 
-    // Obtener usuario para extraer tenantId y validar existencia
+    // Validar usuario y obtener tenantId
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return res.status(400).json({ error: 'Usuario no válido' });
 
     const tenantId = user.tenantId;
 
     const blogPost = await prisma.blogPost.create({
-
       data: {
         tenantId,
         userId,
@@ -28,11 +27,13 @@ export const createBlogPost = async (req, res) => {
           connect: tags.map(id => ({ id })),
         },
       },
+      include: {
+        tenant: true,
+        user: true,
+        categories: true,
+        tags: true,
+      },
     });
-
-
-      data: { tenantId, userId, title, description, imageUrl },
-    });https://teams.microsoft.com/l/meetup-join/19%3avfbDiDoVytibmshhi0v6BNYTkDLYa6pmBT12e9FMR6k1%40thread.tacv2/1753222837371?context=%7b%22Tid%22%3a%2254474fb3-6359-40c1-b726-5d56a7dd2976%22%2c%22Oid%22%3a%22e4ac8c1a-87f7-49cb-a41d-8ce0b1dd4cb0%22%7d
 
     res.status(201).json(blogPost);
   } catch (error) {
@@ -84,7 +85,7 @@ export const getBlogPostById = async (req, res) => {
 export const updateBlogPost = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = req.userId; // del middleware
+    const userId = req.userId;
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
 
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
@@ -102,11 +103,17 @@ export const updateBlogPost = async (req, res) => {
         description,
         imageUrl,
         categories: {
-          set: categories.map(id => ({ id })), // Reemplaza categorías
+          set: categories.map(id => ({ id })), // reemplaza categorías
         },
         tags: {
-          set: tags.map(id => ({ id })), // Reemplaza tags
+          set: tags.map(id => ({ id })), // reemplaza tags
         },
+      },
+      include: {
+        tenant: true,
+        user: true,
+        categories: true,
+        tags: true,
       },
     });
 
@@ -121,7 +128,7 @@ export const updateBlogPost = async (req, res) => {
 export const deleteBlogPost = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = req.userId; // del middleware
+    const userId = req.userId;
 
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
     if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
