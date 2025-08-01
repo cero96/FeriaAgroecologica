@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { Table, Button, Form, Alert } from "react-bootstrap";
-import InvoiceModal from "../components/InvoiceModal.jsx"; // Importar el componente
+import InvoiceModal from "../components/InvoiceModal.jsx";
+import Particule from "../components/Particule"; // Asegúrate de que la ruta sea correcta
 
 export default function CartPage() {
   const { items: cart, setItems: setCart, removeFromCart, total } = useCart();
@@ -24,19 +25,12 @@ export default function CartPage() {
     setLoading(true);
     setMessage("");
     try {
-      // Simula procesamiento de compra
       await new Promise((res) => setTimeout(res, 1000));
 
-      // Crear factura
       const newInvoice = { id: Date.now(), items: [...cart], total };
       setInvoice(newInvoice);
-
-      // Mostrar modal con factura
       setShowInvoiceModal(true);
-
-      // Vaciar carrito después de que la factura se haya mostrado
       setCart([]);
-
       setMessage("✅ Compra realizada exitosamente");
     } catch (error) {
       setMessage("❌ Error al realizar la compra");
@@ -46,10 +40,10 @@ export default function CartPage() {
     }
   };
 
-  // Primero muestra la factura si el carrito está vacío
   if (cart.length === 0 && !showInvoiceModal) {
     return (
       <>
+        <Particule />
         {message && <Alert variant="info">{message}</Alert>}
         <Alert variant="info">El carrito está vacío.</Alert>
       </>
@@ -58,66 +52,69 @@ export default function CartPage() {
 
   return (
     <>
-      <Table bordered hover>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Cantidad</th>
-            <th>Subtotal</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cart.map((product) => (
-            <tr key={product.id}>
-              <td>{product.name}</td>
-              <td>${product.price.toFixed(2)}</td>
-              <td style={{ maxWidth: 80 }}>
-                <Form.Control
-                  type="number"
-                  value={product.quantity}
-                  min={1}
-                  onChange={(e) =>
-                    handleQuantityChange(product.id, e.target.value)
-                  }
-                />
+      <Particule />
+
+      <div style={{ position: "relative", zIndex: 1, padding: "2rem" }}>
+        <Table bordered hover responsive className="bg-white">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cart.map((product) => (
+              <tr key={product.id}>
+                <td>{product.name}</td>
+                <td>${product.price.toFixed(2)}</td>
+                <td style={{ maxWidth: 80 }}>
+                  <Form.Control
+                    type="number"
+                    value={product.quantity}
+                    min={1}
+                    onChange={(e) =>
+                      handleQuantityChange(product.id, e.target.value)
+                    }
+                  />
+                </td>
+                <td>${(product.price * product.quantity).toFixed(2)}</td>
+                <td>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeFromCart(product.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </td>
+              </tr>
+            ))}
+            <tr>
+              <td colSpan={3} className="text-end fw-bold">
+                Total:
               </td>
-              <td>${(product.price * product.quantity).toFixed(2)}</td>
-              <td>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeFromCart(product.id)}
-                >
-                  Eliminar
-                </Button>
+              <td colSpan={2} className="fw-bold">
+                ${total.toFixed(2)}
               </td>
             </tr>
-          ))}
-          <tr>
-            <td colSpan={3} className="text-end fw-bold">
-              Total:
-            </td>
-            <td colSpan={2} className="fw-bold">
-              ${total.toFixed(2)}
-            </td>
-          </tr>
-        </tbody>
-      </Table>
+          </tbody>
+        </Table>
 
-      <Button
-        variant="primary"
-        onClick={handleCheckout}
-        disabled={loading}
-        className="fw-bold"
-      >
-        {loading ? "Procesando..." : "Finalizar compra"}
-      </Button>
+        <Button
+          variant="primary"
+          onClick={handleCheckout}
+          disabled={loading}
+          className="fw-bold"
+        >
+          {loading ? "Procesando..." : "Finalizar compra"}
+        </Button>
 
-      {message && <Alert variant="info" className="mt-3">{message}</Alert>}
+        {message && <Alert variant="info" className="mt-3">{message}</Alert>}
+      </div>
 
-      {/* Usamos el componente InvoiceModal */}
       <InvoiceModal
         invoice={invoice}
         show={showInvoiceModal}
