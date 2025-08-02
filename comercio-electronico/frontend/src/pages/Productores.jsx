@@ -4,18 +4,18 @@ import Particule from '../components/Particule'; // importa tu componente Partic
 
 const productores = [
   {
-    nombre: 'María Gómez',
-    descripcion: 'Productora de lacteos.',
+    nombre: 'Leonardo Quilo',
+    descripcion: 'Productor que elabora lácteos frescos y naturales, con métodos sostenibles y de calidad.',
     imagen: '/Images/Productores/2.png'
   },
   {
-    nombre: 'Carlos Pérez',
-    descripcion: 'Agricultor especializado en frutas.',
+    nombre: 'Lucia Espinosa',
+    descripcion: 'Productora dedicada al cultivo de hortalizas frescas y orgánicas, con prácticas sostenibles y de calidad.',
     imagen: '/Images/Productores/3.png'
   },
   {
-    nombre: 'Ana Torres',
-    descripcion: 'Cultiva desde los 5 años',
+    nombre: 'Maria Elvira Perez',
+    descripcion: 'Productora dedicada al cultivo de frutas frescas, naturales y libres de químicos, comprometida con la calidad y la sostenibilidad.',
     imagen: '/Images/Productores/1.png'
   },
 ];
