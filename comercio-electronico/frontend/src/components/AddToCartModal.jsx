@@ -82,7 +82,7 @@ export default function AddToCartModal({ product, onConfirm, onClose }) {
           />
           <h5 className="fw-bold">{product.name}</h5>
           <p className="text-white-50">
-            Stock disponible: <strong>{product.quantityAvailable}</strong>
+            Precio: <strong>${parseFloat(product.price).toFixed(2)}</strong>
           </p>
           <p>¿Deseas agregar al carrito?</p>
         </Modal.Body>
