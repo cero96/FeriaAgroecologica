@@ -4,12 +4,12 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
   if (!product) return null;
 
   const [localStock, setLocalStock] = useState(product.quantityAvailable);
+  const [showDescription, setShowDescription] = useState(false); // Nuevo estado
 
   const handleAddToCart = () => {
     if (localStock > 0) {
       if (onAdd) {
-        // Pasamos el producto y un callback que resta la cantidad agregada
-        onAdd(product, (addedQuantity = 1) => {
+        onAdd(product, (addedQuantity) => {
           setLocalStock((prevStock) => prevStock - addedQuantity);
         });
       }
@@ -98,15 +98,31 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
           💰 ${product.price.toFixed(2)}
         </p>
 
+        {/* Botón para alternar la descripción */}
         <p
+          onClick={() => setShowDescription(!showDescription)}
           style={{
-            fontSize: "1em",
+            cursor: "pointer",
+            textDecoration: "underline",
+            color: "#00ffff",
             margin: "6px 0",
-            textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
           }}
         >
-          {product.description}
+          {showDescription ? "Ocultar descripción" : "Ver descripción"}
         </p>
+
+        {/* Mostrar descripción solo si está activa */}
+        {showDescription && (
+          <p
+            style={{
+              fontSize: "1em",
+              margin: "6px 0",
+              textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
+            }}
+          >
+            {product.description}
+          </p>
+        )}
 
         <p
           style={{
@@ -124,10 +140,10 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
             textShadow: "1px 1px 3px rgba(0,0,0,0.6)",
           }}
         >
-          📞 Contacto: {product.user?.name || '-'} ({product.user?.phone || '-'})
+          📞 Contacto: {product.user?.name || "-"} ({product.user?.phone || "-"})
         </p>
 
-        {/* Botón Agregar al carrito, solo si onAdd existe */}
+        {/* Botón Agregar al carrito */}
         {onAdd && (
           <button
             style={{
@@ -157,7 +173,7 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
           </button>
         )}
 
-        {/* Botones Editar y Eliminar, solo si onEdit y onDelete existen */}
+        {/* Botones Editar y Eliminar */}
         {(onEdit || onDelete) && (
           <div className="d-flex gap-2 mt-3 justify-content-center">
             {onEdit && (
