@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "nodemon src/index.js --ignore node_modules",
     "start": "node src/index.js",
-    "build": "echo 'No build step required'"
+    "postinstall": "prisma generate && prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "prisma:deploy": "prisma migrate deploy"
   },
   "engines": {
     "node": ">=18.0.0"
