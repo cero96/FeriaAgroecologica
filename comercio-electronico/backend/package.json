@@ -1,16 +1,16 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/index.js --ignore node_modules"
+    "dev": "nodemon src/index.js --ignore node_modules",
+    "start": "node src/index.js",
+    "build": "echo 'No build step required'"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@prisma/client": "^6.13.0",
     "bcrypt": "^6.0.0",
