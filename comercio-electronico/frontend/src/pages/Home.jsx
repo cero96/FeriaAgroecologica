@@ -10,10 +10,16 @@ const Home = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/public/catalog")
-      .then((res) => setProductos(res.data))
-      .catch((err) => console.error("Error al cargar productos:", err));
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/public/catalog`);
+        setProductos(res.data);
+      } catch (err) {
+        console.error("Error al cargar productos:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleOpenModal = (product) => {
@@ -24,7 +30,6 @@ const Home = () => {
     setSelectedProduct(null);
   };
 
-  // Aquí está la corrección: pasamos el objeto con la cantidad incluida
   const handleConfirmAdd = (quantity) => {
     addToCart({ ...selectedProduct, quantity });
     setSelectedProduct(null);
@@ -42,22 +47,18 @@ const Home = () => {
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #2e4d25;
-          background-image: url("public/Images/4.png");
+          background-image: url("Images/4.png");
           background-repeat: no-repeat;
-          background-size: 110% 100%; /* Imagen más grande y alta */
+          background-size: 110% 100%;
           background-position: center;
           animation: moveBg 20s ease-in-out infinite alternate;
-          background-color: #fff; /* Fondo de respaldo */
+          background-color: #fff;
           background-attachment: fixed;
         }
 
         @keyframes moveBg {
-          0% {
-            background-position-x: 100%;
-          }
-          100% {
-            background-position-x: 0%;
-          }
+          0% { background-position-x: 100%; }
+          100% { background-position-x: 0%; }
         }
 
         .hero {
@@ -115,15 +116,9 @@ const Home = () => {
         }
 
         @media (max-width: 480px) {
-          h1 {
-            font-size: 2rem;
-          }
-          .hero h2 {
-            font-size: 1.8rem;
-          }
-          .hero p {
-            font-size: 1rem;
-          }
+          h1 { font-size: 2rem; }
+          .hero h2 { font-size: 1.8rem; }
+          .hero p { font-size: 1rem; }
         }
       `}</style>
 
@@ -138,11 +133,7 @@ const Home = () => {
       </div>
 
       {/* Catálogo */}
-      <div
-        className="container"
-        role="main"
-        aria-label="Catálogo de productos agroecológicos"
-      >
+      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
         <div className="grid">
           {productos.length === 0 && <p>No hay productos disponibles.</p>}
           {productos.map((prod) => (

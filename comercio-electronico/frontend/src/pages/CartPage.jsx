@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { Table, Button, Form, Alert } from "react-bootstrap";
 import InvoiceModal from "../components/InvoiceModal.jsx";
-import Particule from "../components/Particule"; // Asegúrate de que la ruta sea correcta
+import Particule from "../components/Particule"; // Asegúrate que la ruta es válida
 
 export default function CartPage() {
   const { items: cart, setItems: setCart, removeFromCart, total } = useCart();
@@ -14,6 +14,7 @@ export default function CartPage() {
   const handleQuantityChange = (id, newQuantity) => {
     const qty = Number(newQuantity);
     if (isNaN(qty) || qty < 1) return;
+
     setCart((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, quantity: qty } : item
@@ -25,16 +26,22 @@ export default function CartPage() {
     setLoading(true);
     setMessage("");
     try {
-      await new Promise((res) => setTimeout(res, 1000));
+      await new Promise((res) => setTimeout(res, 1000)); // Simula compra
 
-      const newInvoice = { id: Date.now(), items: [...cart], total };
+      const newInvoice = {
+        id: Date.now(),
+        items: [...cart],
+        total,
+        date: new Date().toLocaleDateString(),
+      };
+
       setInvoice(newInvoice);
       setShowInvoiceModal(true);
       setCart([]);
-      setMessage("✅ Compra realizada exitosamente");
+      setMessage("✅ Compra realizada exitosamente.");
     } catch (error) {
-      setMessage("❌ Error al realizar la compra");
       console.error(error);
+      setMessage("❌ Error al realizar la compra.");
     } finally {
       setLoading(false);
     }
@@ -44,8 +51,10 @@ export default function CartPage() {
     return (
       <>
         <Particule />
-        {message && <Alert variant="info">{message}</Alert>}
-        <Alert variant="info">El carrito está vacío.</Alert>
+        <div className="container mt-5" style={{ zIndex: 1, position: "relative" }}>
+          {message && <Alert variant="info">{message}</Alert>}
+          <Alert variant="info" className="text-center">El carrito está vacío.</Alert>
+        </div>
       </>
     );
   }
@@ -54,9 +63,11 @@ export default function CartPage() {
     <>
       <Particule />
 
-      <div style={{ position: "relative", zIndex: 1, padding: "2rem" }}>
+      <div className="container mt-4" style={{ position: "relative", zIndex: 1 }}>
+        <h2 className="mb-4 text-center">Carrito de compras</h2>
+
         <Table bordered hover responsive className="bg-white">
-          <thead>
+          <thead className="table-light">
             <tr>
               <th>Producto</th>
               <th>Precio</th>
@@ -70,11 +81,11 @@ export default function CartPage() {
               <tr key={product.id}>
                 <td>{product.name}</td>
                 <td>${product.price.toFixed(2)}</td>
-                <td style={{ maxWidth: 80 }}>
+                <td style={{ maxWidth: 100 }}>
                   <Form.Control
                     type="number"
-                    value={product.quantity}
                     min={1}
+                    value={product.quantity}
                     onChange={(e) =>
                       handleQuantityChange(product.id, e.target.value)
                     }
@@ -93,9 +104,7 @@ export default function CartPage() {
               </tr>
             ))}
             <tr>
-              <td colSpan={3} className="text-end fw-bold">
-                Total:
-              </td>
+              <td colSpan={3} className="text-end fw-bold">Total:</td>
               <td colSpan={2} className="fw-bold">
                 ${total.toFixed(2)}
               </td>
@@ -103,16 +112,18 @@ export default function CartPage() {
           </tbody>
         </Table>
 
-        <Button
-          variant="primary"
-          onClick={handleCheckout}
-          disabled={loading}
-          className="fw-bold"
-        >
-          {loading ? "Procesando..." : "Finalizar compra"}
-        </Button>
+        <div className="text-center">
+          <Button
+            variant="primary"
+            onClick={handleCheckout}
+            disabled={loading}
+            className="fw-bold"
+          >
+            {loading ? "Procesando..." : "Finalizar compra"}
+          </Button>
+        </div>
 
-        {message && <Alert variant="info" className="mt-3">{message}</Alert>}
+        {message && <Alert variant="info" className="mt-3 text-center">{message}</Alert>}
       </div>
 
       <InvoiceModal

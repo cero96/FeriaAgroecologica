@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 
+// Convierte un link compartido de Google Drive a un link directo de imagen
+function getDirectDriveLink(url) {
+  if (!url) return "";
+  const match = url.match(/\/d\/([^/]+)\//);
+  return match
+    ? `https://drive.google.com/uc?export=view&id=${match[1]}`
+    : url;
+}
+
 const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
   if (!product) return null;
 
   const [localStock, setLocalStock] = useState(product.quantityAvailable);
-  const [showDescription, setShowDescription] = useState(false); // Nuevo estado
+  const [showDescription, setShowDescription] = useState(false);
 
   const handleAddToCart = () => {
     if (localStock > 0) {
@@ -63,7 +72,7 @@ const ProductCard = ({ product, onAdd, onEdit, onDelete }) => {
       <div style={{ position: "relative", zIndex: 1 }}>
         {product.photoUrl && (
           <img
-            src={product.photoUrl}
+            src={getDirectDriveLink(product.photoUrl)}
             alt={`Imagen de ${product.name}`}
             loading="lazy"
             style={{

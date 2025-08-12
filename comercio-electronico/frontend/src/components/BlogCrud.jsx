@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:3000/api/blogs';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api') + '/blogs';
 
 const BlogCrud = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,13 +12,21 @@ const BlogCrud = () => {
 
   const token = localStorage.getItem('token');
 
-  // Fetch all blogs
   const fetchBlogs = async () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error('Error cargando historias');
+      const res = await fetch(API_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        let msg = 'Error cargando historias';
+        try {
+          const errData = await res.json();
+          msg = errData.message || msg;
+        } catch {}
+        throw new Error(msg);
+      }
       const data = await res.json();
       setBlogs(data);
     } catch (err) {
@@ -30,9 +38,9 @@ const BlogCrud = () => {
 
   useEffect(() => {
     fetchBlogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Delete blog
   const handleDelete = async (id) => {
     if (!window.confirm('¿Seguro que quieres eliminar esta historia?')) return;
 
@@ -44,28 +52,29 @@ const BlogCrud = () => {
         },
       });
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Error al eliminar');
+        let errMsg = 'Error al eliminar';
+        try {
+          const errData = await res.json();
+          errMsg = errData.error || errData.message || errMsg;
+        } catch {}
+        throw new Error(errMsg);
       }
-      setBlogs(blogs.filter(b => b.id !== id));
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
       alert('Error al eliminar: ' + err.message);
     }
   };
 
-  // Open edit/create form
   const openForm = (blog = null) => {
     setEditingBlog(blog);
     setShowForm(true);
   };
 
-  // Close form
   const closeForm = () => {
     setEditingBlog(null);
     setShowForm(false);
   };
 
-  // Submit form (create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -92,17 +101,21 @@ const BlogCrud = () => {
       });
 
       if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Error guardando la historia');
+        let errMsg = 'Error guardando la historia';
+        try {
+          const errData = await res.json();
+          errMsg = errData.error || errData.message || errMsg;
+        } catch {}
+        throw new Error(errMsg);
       }
 
       const savedBlog = await res.json();
 
-      if (editingBlog) {
-        setBlogs(blogs.map(b => (b.id === savedBlog.id ? savedBlog : b)));
-      } else {
-        setBlogs([...blogs, savedBlog]);
-      }
+      setBlogs((prevBlogs) =>
+        editingBlog
+          ? prevBlogs.map((b) => (b.id === savedBlog.id ? savedBlog : b))
+          : [...prevBlogs, savedBlog]
+      );
 
       closeForm();
     } catch (err) {
@@ -111,15 +124,22 @@ const BlogCrud = () => {
   };
 
   return (
-    <div className="container p-3">
-      <h2 className="mb-3">Gestión de Historias</h2>
+    <div className="container py-4">
+      <h2 className="mb-4 text-center" style={{ color: '#4b0082' }}>
+        Gestión de Historias
+      </h2>
 
+      <div className="text-end mb-3">
+        <button className="btn btn-success" onClick={() => openForm()}>
+          Crear nueva historia
+        </button>
+      </div>
 
-      {loading && <p>Cargando historias...</p>}
-      {error && <p className="text-danger">{error}</p>}
+      {loading && <p className="text-center">Cargando historias...</p>}
+      {error && <p className="text-danger text-center">{error}</p>}
 
       {!loading && !error && (
-        <table className="table table-striped">
+        <table className="table table-hover shadow-sm rounded" style={{ background: 'white' }}>
           <thead>
             <tr>
               <th>Título</th>
@@ -127,31 +147,6 @@ const BlogCrud = () => {
             </tr>
           </thead>
           <tbody>
-            {blogs.map(blog => (
-              <tr key={blog.id}>
-                <td>{blog.title}</td>
-                <td className="text-end">
-                  <button
-                    className="btn btn-sm btn-info me-2"
-                    onClick={() => setViewBlog(blog)}
-                  >
-                    Ver
-                  </button>
-                  <button
-                    className="btn btn-sm btn-warning me-2"
-                    onClick={() => openForm(blog)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(blog.id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
             {blogs.length === 0 && (
               <tr>
                 <td colSpan={2} className="text-center text-muted">
@@ -159,27 +154,56 @@ const BlogCrud = () => {
                 </td>
               </tr>
             )}
+            {blogs.map((blog) => (
+              <tr key={blog.id}>
+                <td>{blog.title}</td>
+                <td className="text-end">
+                  <button
+                    className="btn btn-sm btn-outline-info me-2"
+                    onClick={() => setViewBlog(blog)}
+                  >
+                    Ver
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-warning me-2"
+                    onClick={() => openForm(blog)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => handleDelete(blog.id)}
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       )}
 
-      {/* Modal para Crear/Editar */}
+      {/* MODAL FORM */}
       {showForm && (
-        <div className="modal d-block" tabIndex="-1" role="dialog" style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
-          <div className="modal-dialog" role="document">
-            <form className="modal-content" onSubmit={handleSubmit}>
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg" role="document">
+            <form
+              className="modal-content"
+              onSubmit={handleSubmit}
+              style={{
+                background: 'linear-gradient(135deg, #ffffff, #f3f3f3)',
+                borderRadius: '15px',
+              }}
+            >
               <div className="modal-header">
                 <h5 className="modal-title">{editingBlog ? 'Editar Historia' : 'Crear Historia'}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={closeForm}
-                  aria-label="Cerrar"
-                ></button>
+                <button type="button" className="btn-close" onClick={closeForm}></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
-                  <label htmlFor="title" className="form-label">Título</label>
+                  <label htmlFor="title" className="form-label">
+                    Título
+                  </label>
                   <input
                     type="text"
                     id="title"
@@ -190,7 +214,9 @@ const BlogCrud = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="description" className="form-label">Descripción</label>
+                  <label htmlFor="description" className="form-label">
+                    Descripción
+                  </label>
                   <textarea
                     id="description"
                     name="description"
@@ -201,7 +227,9 @@ const BlogCrud = () => {
                   />
                 </div>
                 <div className="mb-3">
-                  <label htmlFor="imageUrl" className="form-label">URL de la Imagen</label>
+                  <label htmlFor="imageUrl" className="form-label">
+                    URL de la Imagen
+                  </label>
                   <input
                     type="text"
                     id="imageUrl"
@@ -212,26 +240,35 @@ const BlogCrud = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar</button>
+                <button type="button" className="btn btn-outline-secondary" onClick={closeForm}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Guardar
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Modal para Ver Blog */}
+      {/* MODAL VIEW */}
       {viewBlog && (
-        <div className="modal d-block" tabIndex="-1" role="dialog" style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-lg" role="document">
-            <div className="modal-content">
+            <div
+              className="modal-content"
+              style={{
+                background: 'linear-gradient(135deg, #ffffff, #f3f3f3)',
+                borderRadius: '15px',
+              }}
+            >
               <div className="modal-header">
                 <h5 className="modal-title">{viewBlog.title}</h5>
                 <button
                   type="button"
                   className="btn-close"
                   onClick={() => setViewBlog(null)}
-                  aria-label="Cerrar"
                 ></button>
               </div>
               <div className="modal-body">
@@ -240,16 +277,13 @@ const BlogCrud = () => {
                     src={viewBlog.imageUrl}
                     alt={viewBlog.title}
                     className="img-fluid mb-3 rounded"
+                    style={{ borderRadius: '10px' }}
                   />
                 )}
-                <p style={{ whiteSpace: 'pre-wrap' }}>{viewBlog.description}</p>
+                <p style={{ whiteSpace: 'pre-wrap', color: '#444' }}>{viewBlog.description}</p>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setViewBlog(null)}
-                >
+                <button className="btn btn-outline-secondary" onClick={() => setViewBlog(null)}>
                   Cerrar
                 </button>
               </div>

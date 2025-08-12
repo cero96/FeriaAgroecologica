@@ -55,7 +55,7 @@ npm install bootstrap react-bootstrap react-icons axios react-router-dom
 npm run dev
 
 El frontend se ejecutará en:
-http://localhost:5173
+http://backend:5173
 
  Base de datos
  1. Abrir PgAdmin 4.

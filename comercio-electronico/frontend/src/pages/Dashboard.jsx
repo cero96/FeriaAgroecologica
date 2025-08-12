@@ -31,8 +31,8 @@ const Dashboard = () => {
       const filtered = data.filter(p => p.userId === currentUserId);
       setProducts(filtered);
     } catch (err) {
-      setErrorProducts('Error al cargar productos');
       console.error(err);
+      setErrorProducts('Error al cargar productos');
     } finally {
       setLoadingProducts(false);
     }
@@ -76,15 +76,22 @@ const Dashboard = () => {
       }
       setShowForm(false);
     } catch (err) {
-      alert('Error al guardar producto');
       console.error(err);
+      alert('Error al guardar producto');
     }
   };
 
   const handleNewsFormSubmit = async (newsData) => {
     const token = localStorage.getItem('token');
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    if (!apiUrl) {
+      alert('Error: VITE_API_URL no está definido.');
+      return;
+    }
+
     try {
-      const res = await fetch('http://localhost:3000/api/blogs', {
+      const res = await fetch(`${apiUrl}/blogs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,15 +105,18 @@ const Dashboard = () => {
           imageUrl: newsData.imageUrl || null,
         }),
       });
+
       if (!res.ok) {
         const errData = await res.json();
         throw new Error(errData.message || 'Error desconocido');
       }
+
       alert('Historia creada correctamente');
       const modal = window.bootstrap.Modal.getInstance(document.getElementById('newsModal'));
       modal.hide();
       setShowNewsForm(false);
     } catch (error) {
+      console.error(error);
       alert('Error al crear la historia: ' + (error.message || error));
     }
   };
@@ -118,8 +128,8 @@ const Dashboard = () => {
       await apiFetch(`/products/${id}`, { method: 'DELETE' });
       setProducts(products.filter(p => p.id !== id));
     } catch (err) {
-      alert('Error al eliminar producto');
       console.error(err);
+      alert('Error al eliminar producto');
     }
   };
 
@@ -134,8 +144,8 @@ const Dashboard = () => {
       <main className="container my-4 flex-grow-1">
         <DashboardActions onCreateProduct={handleCreate} onCreateNews={handleCreateNews} />
 
-        {/* Panel dividido lado a lado con diseño responsivo */}
-        <div className="row g-4" style={{ height: 'auto' }}>
+        {/* Panel dividido lado a lado */}
+        <div className="row g-4">
           {/* Productos */}
           <div className="col-12 col-lg-6">
             <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
@@ -160,7 +170,7 @@ const Dashboard = () => {
         </div>
       </main>
 
-      {/* Formularios y modales */}
+      {/* Formularios */}
       {showForm && (
         <ProductForm
           product={editingProduct}
