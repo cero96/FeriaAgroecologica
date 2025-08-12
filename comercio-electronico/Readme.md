@@ -88,3 +88,19 @@ comandos backend dependencias
 comandos frontend
 npm install react-tsparticles tsparticles
 npm install bootstrap react-icons
+
+
+# 1. Detener todos los contenedores
+docker stop $(docker ps -aq)
+
+# 2. Eliminar todos los contenedores
+docker rm $(docker ps -aq)
+
+# 3. Eliminar todas las imágenes
+docker rmi $(docker images -q) --force
+
+# 4. Eliminar todos los volúmenes
+docker volume rm $(docker volume ls -q) --force
+
+# 5. (Opcional) Eliminar redes no usadas
+docker network prune -f

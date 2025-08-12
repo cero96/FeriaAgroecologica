@@ -6,21 +6,33 @@ import AddToCartModal from "../components/AddToCartModal";
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
+  const [filteredProductos, setFilteredProductos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/public/catalog`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/public/catalog`
+        );
         setProductos(res.data);
+        setFilteredProductos(res.data);
       } catch (err) {
         console.error("Error al cargar productos:", err);
       }
     };
-
     fetchData();
   }, []);
+
+  // Filtrar productos cada vez que cambia searchTerm
+  useEffect(() => {
+    const lowerTerm = searchTerm.toLowerCase();
+    setFilteredProductos(
+      productos.filter((p) => p.nombre.toLowerCase().includes(lowerTerm))
+    );
+  }, [searchTerm, productos]);
 
   const handleOpenModal = (product) => {
     setSelectedProduct(product);
@@ -67,6 +79,7 @@ const Home = () => {
           background: rgba(0, 0, 0, 0.5);
           border-bottom: 2px solid #ddd;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          position: relative;
         }
 
         .hero h2 {
@@ -88,6 +101,20 @@ const Home = () => {
           max-width: 700px;
           margin: 0 auto;
           color: #fff;
+        }
+
+        .search-bar {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+        }
+
+        .search-bar input {
+          padding: 0.6rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          font-size: 1rem;
+          width: 220px;
         }
 
         .container {
@@ -119,24 +146,42 @@ const Home = () => {
           h1 { font-size: 2rem; }
           .hero h2 { font-size: 1.8rem; }
           .hero p { font-size: 1rem; }
+          .search-bar {
+            position: static;
+            margin-top: 1rem;
+          }
         }
       `}</style>
 
-      {/* Hero */}
+      {/* Hero con barra de búsqueda */}
       <div className="hero">
-        <h2 className="animate__animated animate__fadeInDown">
-          ¡Bienvenido a la Feria Agroecológica!
-        </h2>
-        <p className="animate__animated animate__fadeInUp">
-          Promovemos el consumo responsable y el comercio justo. Explora nuestro catálogo de productos naturales, sostenibles y agroecológicos que ayudan a proteger el planeta.
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Buscar producto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <h2>¡Bienvenido a la Feria Agroecológica!</h2>
+        <p>
+          Promovemos el consumo responsable y el comercio justo. Explora nuestro
+          catálogo de productos naturales, sostenibles y agroecológicos que
+          ayudan a proteger el planeta.
         </p>
       </div>
 
       {/* Catálogo */}
-      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
+      <div
+        className="container"
+        role="main"
+        aria-label="Catálogo de productos agroecológicos"
+      >
         <div className="grid">
-          {productos.length === 0 && <p>No hay productos disponibles.</p>}
-          {productos.map((prod) => (
+          {filteredProductos.length === 0 && (
+            <p>No hay productos disponibles.</p>
+          )}
+          {filteredProductos.map((prod) => (
             <ProductCard key={prod.id} product={prod} onAdd={handleOpenModal} />
           ))}
         </div>
