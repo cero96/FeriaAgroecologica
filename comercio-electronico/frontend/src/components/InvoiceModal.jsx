@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
 import { FaCheckCircle, FaTruck, FaWhatsapp } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // Importamos para redirigir
 
 export default function InvoiceModal({ invoice, show, onHide }) {
   const [cliente, setCliente] = useState({
@@ -11,20 +12,24 @@ export default function InvoiceModal({ invoice, show, onHide }) {
     direccion: "",
   });
 
+  const navigate = useNavigate(); // Hook de redirección
+
   const handleSendWhatsApp = () => {
+    // Validamos que todos los campos estén llenos
     if (!cliente.nombre || !cliente.cedula || !cliente.direccion) {
       alert("Por favor complete los datos del cliente antes de enviar.");
       return;
     }
 
+    // Construimos el mensaje de WhatsApp sin emojis
     const mensaje = `
-🧾 *Nota de Venta #${invoice?.id}*
-👤 *Cliente:* ${cliente.nombre}
-🆔 *Cédula:* ${cliente.cedula}
-🏠 *Dirección:* ${cliente.direccion}
-📅 *Fecha:* ${new Date(invoice?.id).toLocaleDateString()}
+Nota de Venta #${invoice?.id}
+Cliente: ${cliente.nombre}
+Cédula: ${cliente.cedula}
+Dirección: ${cliente.direccion}
+Fecha: ${new Date(invoice?.id).toLocaleDateString()}
 
-📦 *Productos:*
+Productos:
 ${invoice.items
       .map(
         (item) =>
@@ -34,13 +39,16 @@ ${invoice.items
       )
       .join("\n")}
 
-💵 *Total:* $${invoice.total.toFixed(2)}
-🛍️ *Entrega:* Retiro en feria o delivery (a coordinar)
+Total: $${invoice.total.toFixed(2)}
+Entrega: Retiro en feria o delivery (a coordinar)
 `;
 
     const telefono = "593979078578";
     const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, "_blank");
+
+    window.open(url, "_blank"); // Abrimos WhatsApp en nueva pestaña
+
+    navigate("/"); // Redirigimos al inicio si todo salió bien
   };
 
   return (
@@ -62,40 +70,63 @@ ${invoice.items
       <Modal.Body>
         {invoice ? (
           <div className="row">
-            {/* Columna izquierda: Datos del cliente */}
+            {/* Columna izquierda: Formulario de cliente */}
             <div className="col-md-5">
               <h5>Datos del Cliente</h5>
+
+              {/* Campo: Nombre */}
               <Form.Group className="mb-2">
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
                   type="text"
+                  maxLength={20}
                   value={cliente.nombre}
-                  onChange={(e) =>
-                    setCliente({ ...cliente, nombre: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const valor = e.target.value;
+                    const valido = /^[a-zA-ZÁÉÍÓÚÑáéíóúñ\s]*$/.test(valor);
+                    if (!valido) {
+                      alert("Solo se permiten letras y espacios en el nombre.");
+                      return;
+                    }
+                    setCliente({ ...cliente, nombre: valor });
+                  }}
                 />
               </Form.Group>
+
+              {/* Campo: Cédula */}
               <Form.Group className="mb-2">
                 <Form.Label>Cédula</Form.Label>
                 <Form.Control
                   type="text"
+                  maxLength={10}
                   value={cliente.cedula}
-                  onChange={(e) =>
-                    setCliente({ ...cliente, cedula: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const valor = e.target.value;
+                    const soloNumeros = valor.replace(/\D/g, "");
+                    if (valor !== soloNumeros) {
+                      alert("Solo se permiten números en la cédula.");
+                      return;
+                    }
+                    setCliente({ ...cliente, cedula: soloNumeros });
+                  }}
                 />
               </Form.Group>
+
+              {/* Campo: Dirección */}
               <Form.Group className="mb-3">
                 <Form.Label>Dirección</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={2}
+                  maxLength={200}
                   value={cliente.direccion}
                   onChange={(e) =>
                     setCliente({ ...cliente, direccion: e.target.value })
                   }
                 />
               </Form.Group>
+
+              {/* Botón de WhatsApp */}
               <Button
                 variant="success"
                 className="w-100"
@@ -106,7 +137,7 @@ ${invoice.items
               </Button>
             </div>
 
-            {/* Columna derecha: Detalle de la factura */}
+            {/* Columna derecha: Factura */}
             <div className="col-md-7">
               <div className="invoice-header mb-3">
                 <h5 className="text-uppercase">Feria Agroecológica La Floresta</h5>
