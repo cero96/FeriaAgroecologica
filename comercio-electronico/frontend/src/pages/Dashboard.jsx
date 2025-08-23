@@ -139,7 +139,7 @@ const Dashboard = () => {
           {/* Productos */}
           <div className="col-12 col-lg-6">
             <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Productos</h3>
+              <h3 className="mb-3 border-bottom pb-2 text-success">Mis Productos</h3>
               <ProductList
                 products={products}
                 loading={loadingProducts}
@@ -153,7 +153,7 @@ const Dashboard = () => {
           {/* Historias */}
           <div className="col-12 col-lg-6">
             <section className="d-flex flex-column bg-white rounded shadow-sm p-4" style={{ maxHeight: '500px', overflowY: 'auto' }}>
-              <h3 className="mb-3 border-bottom pb-2 text-primary">Mis Historias</h3>
+              <h3 className="mb-3 border-bottom pb-2 text-success">Mis Historias</h3>
               <BlogCrud />
             </section>
           </div>
