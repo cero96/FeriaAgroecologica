@@ -213,7 +213,7 @@ const BlogCrud = () => {
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar</button>
+                <button type="submit" className="btn btn-success">Guardar</button>
               </div>
             </form>
           </div>

@@ -104,7 +104,7 @@ export default function CartPage() {
         </Table>
 
         <Button
-          variant="primary"
+          variant="success"
           onClick={handleCheckout}
           disabled={loading}
           className="fw-bold"

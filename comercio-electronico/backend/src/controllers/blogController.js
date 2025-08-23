@@ -1,21 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-// Crear blog (historia)
+// Crear blog
 export const createBlogPost = async (req, res) => {
   try {
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
-    const userId = req.userId; // viene del middleware
+    const userId = req.userId;
 
-    // Validar usuario y obtener tenantId
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return res.status(400).json({ error: 'Usuario no válido' });
 
-    const tenantId = user.tenantId;
-
     const blogPost = await prisma.blogPost.create({
       data: {
-        tenantId,
+        tenantId: user.tenantId,
         userId,
         title,
         description,
@@ -42,7 +39,7 @@ export const createBlogPost = async (req, res) => {
   }
 };
 
-// Obtener todos los blogs (público)
+// Obtener todos los blogs
 export const getAllBlogPosts = async (req, res) => {
   try {
     const blogPosts = await prisma.blogPost.findMany({
@@ -52,6 +49,9 @@ export const getAllBlogPosts = async (req, res) => {
         categories: true,
         tags: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     res.json(blogPosts);
   } catch (error) {
@@ -60,7 +60,7 @@ export const getAllBlogPosts = async (req, res) => {
   }
 };
 
-// Obtener blog por ID (público)
+// Obtener blog por ID
 export const getBlogPostById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -91,7 +91,6 @@ export const updateBlogPost = async (req, res) => {
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
     if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
 
-    // Validar autor
     if (blogPost.userId !== userId) {
       return res.status(403).json({ error: 'No tienes permiso para editar este blog' });
     }
@@ -103,10 +102,10 @@ export const updateBlogPost = async (req, res) => {
         description,
         imageUrl,
         categories: {
-          set: categories.map(id => ({ id })), // reemplaza categorías
+          set: categories.map(id => ({ id })),
         },
         tags: {
-          set: tags.map(id => ({ id })), // reemplaza tags
+          set: tags.map(id => ({ id })),
         },
       },
       include: {
@@ -133,7 +132,6 @@ export const deleteBlogPost = async (req, res) => {
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
     if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
 
-    // Validar autor
     if (blogPost.userId !== userId) {
       return res.status(403).json({ error: 'No tienes permiso para eliminar este blog' });
     }
