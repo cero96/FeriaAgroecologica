@@ -1,17 +1,19 @@
+# backend/Dockerfile
 FROM node:20-alpine
 WORKDIR /app
 
-# Copia dependencias y las instala
+# Copiar dependencias e instalar
 COPY package*.json ./
 RUN npm install
 
-# Copia el resto del código
+# Copiar el resto del código
 COPY . .
 
 # Generar cliente Prisma
 RUN npx prisma generate
 
+# Exponer puerto
 EXPOSE 3000
 
-# Ejecuta migraciones y levanta la app en dev
+# Ejecutar migraciones y levantar la app en dev
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
