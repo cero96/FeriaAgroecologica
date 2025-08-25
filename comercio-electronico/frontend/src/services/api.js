@@ -1,16 +1,18 @@
 // Detecta si está corriendo dentro de Docker
-const isDocker = window.location.hostname !== 'localhost';
-const API_URL = isDocker ? 'http://backend:3000/api' : import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+    : 'http://backend:3000/api';
 
 export async function apiFetch(endpoint, options = {}) {
-  try {
-    const token = localStorage.getItem('token');
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    };
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers,
+  };
 
+  try {
     const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
 
     if (!res.ok) {
@@ -19,6 +21,7 @@ export async function apiFetch(endpoint, options = {}) {
         window.location.href = '/login';
         return;
       }
+
       const errText = await res.text();
       throw new Error(errText || `Error en la petición: ${res.status}`);
     }
@@ -30,6 +33,7 @@ export async function apiFetch(endpoint, options = {}) {
       return await res.text();
     }
   } catch (error) {
+    // Error de red o de CORS
     console.error('Error en la petición API:', error);
     throw new Error(error.message || 'Error de red');
   }
