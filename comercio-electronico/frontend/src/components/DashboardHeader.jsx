@@ -20,7 +20,7 @@ const DashboardHeader = ({ onLogout }) => {
   return (
     <header className="bg-white shadow-sm py-3 sticky-top">
       <div className="container d-flex justify-content-between align-items-center">
-        <h2 className="mb-0 text-primary fw-bold">Hola, {userName}</h2>
+        <h2 className="mb-0 text-success fw-bold">Hola, {userName}</h2>
         {/* Puedes agregar aquí un botón de cerrar sesión si lo deseas */}
       </div>
     </header>

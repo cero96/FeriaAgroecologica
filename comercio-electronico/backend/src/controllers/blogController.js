@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+<<<<<<< HEAD
 // Crear blog (requiere autenticación)
+=======
+// Crear blog
+>>>>>>> MarcoAntonio
 export const createBlogPost = async (req, res) => {
   try {
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
@@ -10,11 +14,9 @@ export const createBlogPost = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return res.status(400).json({ error: 'Usuario no válido' });
 
-    const tenantId = user.tenantId;
-
     const blogPost = await prisma.blogPost.create({
       data: {
-        tenantId,
+        tenantId: user.tenantId,
         userId,
         title,
         description,
@@ -50,6 +52,9 @@ export const getAllBlogPosts = async (req, res) => {
         user: true,
         categories: true,
         tags: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
     res.json(blogPosts);
@@ -100,8 +105,17 @@ export const updateBlogPost = async (req, res) => {
         title,
         description,
         imageUrl,
+<<<<<<< HEAD
         categories: { set: categories.map(id => ({ id })) },
         tags: { set: tags.map(id => ({ id })) },
+=======
+        categories: {
+          set: categories.map(id => ({ id })),
+        },
+        tags: {
+          set: tags.map(id => ({ id })),
+        },
+>>>>>>> MarcoAntonio
       },
       include: {
         tenant: true,

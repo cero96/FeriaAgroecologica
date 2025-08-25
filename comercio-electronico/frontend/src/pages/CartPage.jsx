@@ -112,6 +112,7 @@ export default function CartPage() {
           </tbody>
         </Table>
 
+<<<<<<< HEAD
         <div className="text-center">
           <Button
             variant="primary"
@@ -122,6 +123,16 @@ export default function CartPage() {
             {loading ? "Procesando..." : "Finalizar compra"}
           </Button>
         </div>
+=======
+        <Button
+          variant="success"
+          onClick={handleCheckout}
+          disabled={loading}
+          className="fw-bold"
+        >
+          {loading ? "Procesando..." : "Finalizar compra"}
+        </Button>
+>>>>>>> MarcoAntonio
 
         {message && <Alert variant="info" className="mt-3 text-center">{message}</Alert>}
       </div>

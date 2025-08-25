@@ -240,12 +240,17 @@ const BlogCrud = () => {
                 </div>
               </div>
               <div className="modal-footer">
+<<<<<<< HEAD
                 <button type="button" className="btn btn-outline-secondary" onClick={closeForm}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary">
                   Guardar
                 </button>
+=======
+                <button type="button" className="btn btn-secondary" onClick={closeForm}>Cancelar</button>
+                <button type="submit" className="btn btn-success">Guardar</button>
+>>>>>>> MarcoAntonio
               </div>
             </form>
           </div>
