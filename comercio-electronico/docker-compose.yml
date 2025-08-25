@@ -29,9 +29,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
-    command: >
-      sh -c "npx prisma migrate deploy &&
-             npm run dev"
+    command: npm run dev
     networks:
       - fe_be_net
 
@@ -48,8 +46,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: >
-      sh -c "npm run dev -- --host"
+    command: npm run dev -- --host
     networks:
       - fe_be_net
 
