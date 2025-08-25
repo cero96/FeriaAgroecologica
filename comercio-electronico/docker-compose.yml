@@ -1,17 +1,15 @@
-version: "3.9"
+version: '3.9'
 
 services:
   frontend:
     build: ./frontend
     container_name: frontend_app
     ports:
-      - "80:80"  # Puerto público del frontend
+      - "80:80"
     env_file:
       - ./frontend/.env
     depends_on:
       - backend
-    networks:
-      - app-network
 
   backend:
     build: ./backend
@@ -20,11 +18,9 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3000:3000"  # Puerto público del backend
+      - "3000:3000"
     depends_on:
       - db
-    networks:
-      - app-network
 
   db:
     image: postgres:15
@@ -37,12 +33,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
 
 volumes:
   postgres_data:
-
-networks:
-  app-network:
-    driver: bridge

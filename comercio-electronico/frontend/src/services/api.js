@@ -1,18 +1,5 @@
-// Detecta el entorno y define la URL de la API
-const API_URL = (() => {
-  // Desarrollo local en navegador
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-  }
-
-  // Contenedores Docker (frontend → backend)
-  if (window.location.hostname === 'frontend_app') {
-    return 'http://backend:3000/api';
-  }
-
-  // Producción pública
-  return import.meta.env.VITE_API_URL || 'http://158.23.80.110:3000/api';
-})();
+// Detecta si estamos en desarrollo o producción
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -31,7 +18,6 @@ export async function apiFetch(endpoint, options = {}) {
         window.location.href = '/login';
         return;
       }
-
       const errText = await res.text();
       throw new Error(errText || `Error en la petición: ${res.status}`);
     }
