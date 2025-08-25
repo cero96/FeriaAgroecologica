@@ -1,42 +1,57 @@
+version: "3.9"
+
 services:
-  postgres_db:
+  db:
     image: postgres:15
-    container_name: postgres_db
+    container_name: db
+    restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: comercio
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: Comercio_electronico
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - fe_be_net
 
   backend_app:
     build: ./backend
     container_name: backend_app
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres_db:5432/comercio
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
     ports:
       - "3000:3000"
-    depends_on:
-      - postgres_db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: >
+      sh -c "npx prisma migrate deploy &&
+             npm run dev"
     networks:
       - fe_be_net
 
   frontend_app:
     build: ./frontend
     container_name: frontend_app
-    environment:
-      VITE_API_URL: http://backend_app:3000/api
-    ports:
-      - "5173:80"
+    restart: always
     depends_on:
       - backend_app
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: >
+      sh -c "npm run dev -- --host"
     networks:
       - fe_be_net
-    restart: always
 
 volumes:
   postgres_data:
