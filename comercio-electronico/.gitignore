@@ -7,18 +7,47 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node modules
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.out/
 *.local
 
 # Editor directories and files
-.vscode/*
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.production.local
+.env.development.local
+.env.test.local
+
+# Docker
+docker-compose.override.yml
+*.pid
+*.seed
+*.log
+*.sqlite
+*.sqlite3
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+Desktop.ini
