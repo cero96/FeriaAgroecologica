@@ -1,36 +1,37 @@
+version: "3.9"
 services:
-  frontend:
-    build: ./frontend
-    container_name: frontend_app
-    ports:
-      - "80:80"
-    env_file:
-      - ./frontend/.env
-    depends_on:
-      - backend
-
-  backend:
-    build: ./backend
-    container_name: backend_app
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-
-  db:
+  postgres_db:
     image: postgres:15
     container_name: postgres_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: Comercio_electronico
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: comercio
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend_app:
+    build: ./backend
+    container_name: backend_app
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres_db:5432/comercio
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres_db
+
+  frontend_app:
+    build: ./frontend
+    container_name: frontend_app
+    environment:
+      VITE_API_URL: http://backend_app:3000/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend_app
+    restart: always
 
 volumes:
   postgres_data:

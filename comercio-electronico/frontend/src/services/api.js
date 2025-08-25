@@ -1,5 +1,6 @@
-// Detecta si estamos en desarrollo o producción
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// frontend/src/services/api.js
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -10,7 +11,11 @@ export async function apiFetch(endpoint, options = {}) {
   };
 
   try {
-    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+    const res = await fetch(`${API_URL}${endpoint}`, { 
+      ...options, 
+      headers, 
+      credentials: 'include' // permite cookies si backend las usa
+    });
 
     if (!res.ok) {
       if (res.status === 401 || res.status === 403) {
