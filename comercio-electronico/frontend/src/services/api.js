@@ -1,24 +1,36 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Detecta si está corriendo dentro de Docker
+const isDocker = window.location.hostname !== 'localhost';
+const API_URL = isDocker ? 'http://backend:3000/api' : import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export async function apiFetch(endpoint, options = {}) {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-    ...options.headers,
-  };
+  try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    };
 
-  const res = await fetch(API_URL + endpoint, { ...options, headers });
+    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
 
-  if (!res.ok) {
-    if (res.status === 403 || res.status === 401) {
-      localStorage.clear();
-      window.location.href = '/login';
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        localStorage.clear();
+        window.location.href = '/login';
+        return;
+      }
+      const errText = await res.text();
+      throw new Error(errText || `Error en la petición: ${res.status}`);
     }
 
-    const errText = await res.text();
-    throw new Error(errText || 'Error en la petición');
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await res.json();
+    } else {
+      return await res.text();
+    }
+  } catch (error) {
+    console.error('Error en la petición API:', error);
+    throw new Error(error.message || 'Error de red');
   }
-
-  return res.json();
 }

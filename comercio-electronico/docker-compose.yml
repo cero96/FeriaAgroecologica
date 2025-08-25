@@ -1,11 +1,9 @@
-version: "3.9"
-
 services:
   frontend:
     build: ./frontend
     container_name: frontend_app
     ports:
-      - "80:3001" # Exponemos frontend en puerto 80 de la VM
+      - "80:80"
     env_file:
       - ./frontend/.env
     depends_on:
@@ -19,8 +17,6 @@ services:
       JWT_SECRET: ${JWT_SECRET}
     ports:
       - "3000:3000"
-    env_file:
-      - ./backend/.env
     depends_on:
       - db
 
