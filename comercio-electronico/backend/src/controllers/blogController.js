@@ -1,3 +1,4 @@
+// backend/src/controllers/blogsController.js
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -5,23 +6,25 @@ const prisma = new PrismaClient();
 export const createBlogPost = async (req, res) => {
   try {
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
-    const userId = req.userId;
+    const { userId, tenantId } = req; // 👈 asumimos que el middleware añade userId y tenantId
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return res.status(400).json({ error: 'Usuario no válido' });
+    if (!user || user.tenantId !== tenantId) {
+      return res.status(400).json({ error: 'Usuario no válido o acceso denegado' });
+    }
 
     const blogPost = await prisma.blogPost.create({
       data: {
-        tenantId: user.tenantId,
+        tenantId,
         userId,
         title,
         description,
         imageUrl,
         categories: {
-          connect: categories.map(id => ({ id })),
+          connect: categories.map((id) => ({ id })),
         },
         tags: {
-          connect: tags.map(id => ({ id })),
+          connect: tags.map((id) => ({ id })),
         },
       },
       include: {
@@ -39,10 +42,13 @@ export const createBlogPost = async (req, res) => {
   }
 };
 
-// Obtener todos los blogs
+// Obtener todos los blogs (solo tenant del usuario)
 export const getAllBlogPosts = async (req, res) => {
   try {
+    const { tenantId } = req;
+
     const blogPosts = await prisma.blogPost.findMany({
+      where: { tenantId }, // 👈 solo los de su tenant
       include: {
         tenant: true,
         user: true,
@@ -53,6 +59,7 @@ export const getAllBlogPosts = async (req, res) => {
         createdAt: 'desc',
       },
     });
+
     res.json(blogPosts);
   } catch (error) {
     console.error('Error al obtener blogPosts:', error);
@@ -60,10 +67,12 @@ export const getAllBlogPosts = async (req, res) => {
   }
 };
 
-// Obtener blog por ID
+// Obtener blog por ID (solo si pertenece al tenant)
 export const getBlogPostById = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const { tenantId } = req;
+
     const blogPost = await prisma.blogPost.findUnique({
       where: { id },
       include: {
@@ -73,7 +82,11 @@ export const getBlogPostById = async (req, res) => {
         tags: true,
       },
     });
-    if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
+
+    if (!blogPost || blogPost.tenantId !== tenantId) {
+      return res.status(404).json({ error: 'Blog no encontrado o acceso denegado' });
+    }
+
     res.json(blogPost);
   } catch (error) {
     console.error('Error al obtener blogPost:', error);
@@ -81,15 +94,17 @@ export const getBlogPostById = async (req, res) => {
   }
 };
 
-// Actualizar blog (solo autor puede hacerlo)
+// Actualizar blog (solo autor y dentro del tenant)
 export const updateBlogPost = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = req.userId;
+    const { userId, tenantId } = req;
     const { title, description, imageUrl, categories = [], tags = [] } = req.body;
 
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
-    if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
+    if (!blogPost || blogPost.tenantId !== tenantId) {
+      return res.status(404).json({ error: 'Blog no encontrado o acceso denegado' });
+    }
 
     if (blogPost.userId !== userId) {
       return res.status(403).json({ error: 'No tienes permiso para editar este blog' });
@@ -102,10 +117,10 @@ export const updateBlogPost = async (req, res) => {
         description,
         imageUrl,
         categories: {
-          set: categories.map(id => ({ id })),
+          set: categories.map((id) => ({ id })),
         },
         tags: {
-          set: tags.map(id => ({ id })),
+          set: tags.map((id) => ({ id })),
         },
       },
       include: {
@@ -123,14 +138,16 @@ export const updateBlogPost = async (req, res) => {
   }
 };
 
-// Eliminar blog (solo autor puede hacerlo)
+// Eliminar blog (solo autor y dentro del tenant)
 export const deleteBlogPost = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const userId = req.userId;
+    const { userId, tenantId } = req;
 
     const blogPost = await prisma.blogPost.findUnique({ where: { id } });
-    if (!blogPost) return res.status(404).json({ error: 'Blog no encontrado' });
+    if (!blogPost || blogPost.tenantId !== tenantId) {
+      return res.status(404).json({ error: 'Blog no encontrado o acceso denegado' });
+    }
 
     if (blogPost.userId !== userId) {
       return res.status(403).json({ error: 'No tienes permiso para eliminar este blog' });

@@ -7,7 +7,12 @@ function BlogCard({ post }) {
       className="mb-4 p-3 border rounded shadow-sm bg-white"
       style={{ wordBreak: 'break-word' }}
     >
-      <h2 className="text-truncate" style={{ maxWidth: '100%' }}>{post.title}</h2>
+      <h2
+        className="text-truncate"
+        style={{ maxWidth: '100%', color: 'green' }}
+      >
+        {post.title}
+      </h2>
       {post.user && <p><strong>Autor:</strong> {post.user.name}</p>}
       <p><small>Publicado el {new Date(post.createdAt).toLocaleDateString()}</small></p>
       {post.imageUrl && (
@@ -56,7 +61,7 @@ export default function BlogPage() {
 
       {/* Contenedor principal con z-index para estar encima */}
       <div className="container mt-4" style={{ position: 'relative', zIndex: 1 }}>
-        <h1>Blog Posts</h1>
+        <h1 style={{ color: 'green' }}>Blog Posts</h1>
         {posts.length === 0 ? (
           <p>No hay blog posts disponibles.</p>
         ) : (

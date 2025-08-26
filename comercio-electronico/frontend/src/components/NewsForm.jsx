@@ -27,13 +27,8 @@ const NewsForm = ({ onSubmit, onClose }) => {
       newErrors.description = 'La descripción debe tener al menos 100 caracteres';
     }
 
-    if (
-      formData.imageUrl &&
-      !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(formData.imageUrl.trim())
-    ) {
-      newErrors.imageUrl = 'Debe ser una URL válida de imagen (.jpg, .png, etc.)';
-    }
-
+    // ❌ Eliminada la validación de URL de imagen
+    // ahora cualquier valor (o vacío) es válido
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,14 +46,12 @@ const NewsForm = ({ onSubmit, onClose }) => {
     setLoading(true);
 
     try {
-      // Enviar solo los campos que el backend necesita
       await onSubmit({
         title: formData.title,
         description: formData.description,
         imageUrl: formData.imageUrl
       });
 
-      // Reset form después de crear
       setFormData({
         title: '',
         description: '',
@@ -113,14 +106,13 @@ const NewsForm = ({ onSubmit, onClose }) => {
         <div className="mb-3">
           <label className="form-label"><FaImage /> URL de Imagen (opcional)</label>
           <input
-            type="url"
-            className={`form-control ${errors.imageUrl ? 'is-invalid' : ''}`}
+            type="text" // puedes usar 'url' o 'text', ambos funcionan
+            className="form-control"
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleChange}
-            placeholder="https://ejemplo.com/imagen.jpg"
+            placeholder="Opcional: https://ejemplo.com/imagen.jpg"
           />
-          {errors.imageUrl && <div className="invalid-feedback">{errors.imageUrl}</div>}
         </div>
 
         {/* Botones */}
