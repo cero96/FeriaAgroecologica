@@ -1,20 +1,15 @@
-version: "3.8"
-
+version: "3.9"
 services:
   db:
     image: postgres:15
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: usuario
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: nombre_bd
+      POSTGRES_USER: tu_usuario
+      POSTGRES_PASSWORD: tu_password
+      POSTGRES_DB: tu_bd
     ports:
       - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - backend_net
 
   backend:
     build: ./backend
@@ -22,27 +17,8 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    env_file:
-      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgres://tu_usuario:tu_password@db:5432/tu_bd
     depends_on:
       - db
-    networks:
-      - backend_net
-
-  prisma-migrate:
-    build: ./backend
-    container_name: prisma_migrate
-    command: ["npx", "prisma", "migrate", "deploy"]
-    env_file:
-      - ./backend/.env
-    depends_on:
-      - db
-    networks:
-      - backend_net
-
-volumes:
-  db_data:
-
-networks:
-  backend_net:
-    driver: bridge
+    command: ["npm", "run", "dev"]   # <--- aquí sobreescribimos el CMD del Dockerfile

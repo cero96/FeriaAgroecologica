@@ -1,23 +1,22 @@
-# Imagen base
-FROM node:18
+FROM node:20-alpine
 
-# Directorio de trabajo dentro del contenedor
-WORKDIR /app
+# Crear directorio de la app
+WORKDIR /usr/src/app
 
-# Copiamos package.json y package-lock.json primero (para aprovechar la cache de Docker)
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalamos dependencias
+# Instalar dependencias
 RUN npm install
 
-# Copiamos todo el código del backend
+# Copiar todo el código
 COPY . .
 
-# Generamos el cliente de Prisma
+# Generar cliente Prisma
 RUN npx prisma generate
 
-# Exponemos el puerto definido en .env (por defecto 3000)
+# Exponer puerto
 EXPOSE 3000
 
-# Comando por defecto para iniciar el backend
-CMD ["npm", "start"]
+# Comando de inicio (usa tu script dev si start no existe)
+CMD ["npm", "run", "dev"]
