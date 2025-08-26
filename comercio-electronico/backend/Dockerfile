@@ -18,5 +18,5 @@ RUN npx prisma generate
 # Exponer puerto
 EXPOSE 3000
 
-# Comando de inicio (usa tu script dev si start no existe)
+# Comando de inicio
 CMD ["npm", "run", "dev"]
