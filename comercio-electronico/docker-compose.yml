@@ -21,4 +21,13 @@ services:
       - DATABASE_URL=postgres://tu_usuario:tu_password@db:5432/tu_bd
     depends_on:
       - db
-    command: ["npm", "run", "dev"]   # <--- aquí sobreescribimos el CMD del Dockerfile
+    command: ["npm", "run", "dev"]
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_app
+    restart: always
+    ports:
+      - "5173:80"   # aquí mapearás el puerto 80 de Nginx a 5173
+    depends_on:
+      - backend
