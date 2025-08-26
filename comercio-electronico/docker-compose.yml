@@ -1,19 +1,6 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:15
-    container_name: postgres_db
-    restart: always
-    environment:
-      POSTGRES_USER: tu_usuario
-      POSTGRES_PASSWORD: tu_password
-      POSTGRES_DB: tu_bd
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
   backend:
     build: ./backend
     container_name: backend_app
@@ -21,11 +8,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: "postgres://tu_usuario:tu_password@db:5432/tu_bd"
-      JWT_SECRET: "clave_super_segura_para_tokens"
-      NODE_ENV: "production"
-    depends_on:
-      - db
+      DATABASE_URL: "${DATABASE_URL}"  # Tomará la URL de tu .env
+      JWT_SECRET: "${JWT_SECRET}"
+      NODE_ENV: "${NODE_ENV}"
     command: ["npm", "run", "dev"]
 
   frontend:
@@ -33,11 +18,11 @@ services:
     container_name: frontend_app
     restart: always
     ports:
-      - "5173:80"   # mapeo puerto 80 del contenedor al 5173 del host
+      - "5173:80"   # Puerto 80 del contenedor mapeado al 5173 del host
     depends_on:
       - backend
     environment:
       VITE_API_URL: "http://backend_app:3000/api"
 
 volumes:
-  db_data:
+  # No se necesita volumen ya que no usamos contenedor DB local
