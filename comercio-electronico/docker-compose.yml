@@ -1,14 +1,12 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: tu_usuario
-      POSTGRES_PASSWORD: tu_password
-      POSTGRES_DB: tu_bd
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nombre_bd
     ports:
       - "5432:5432"
     volumes:
@@ -21,7 +19,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: "postgresql://tu_usuario:tu_password@db:5432/tu_bd?sslmode=disable"
+      DATABASE_URL: "postgresql://usuario:password@db:5432/nombre_bd?sslmode=disable"
       JWT_SECRET: "clave_super_segura_para_tokens"
       NODE_ENV: "production"
     depends_on:
@@ -33,11 +31,11 @@ services:
     container_name: frontend_app
     restart: always
     ports:
-      - "5173:80"  # Nginx servirá React en el puerto 5173
+      - "5173:80"
     depends_on:
       - backend
     environment:
-      VITE_API_URL: "http://158.23.80.110:3000/api"  # URL pública del backend
+      VITE_API_URL: "http://158.23.80.110:3000/api"
 
 volumes:
   db_data:
