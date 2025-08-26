@@ -1,5 +1,4 @@
-version: "3.9"
-
+# docker-compose.yml
 services:
   db:
     image: postgres:15
@@ -10,7 +9,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: nombre_bd
     ports:
-      - "5432:5432"
+      - "5433:5432" # host:container
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -20,10 +19,8 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      DATABASE_URL: "postgresql://usuario:password@db:5432/nombre_bd?sslmode=disable"
-      JWT_SECRET: "clave_super_segura_para_tokens"
-      NODE_ENV: "production"
+    env_file:
+      - ./backend/.env
     depends_on:
       - db
     command: ["npm", "run", "dev"]
@@ -37,7 +34,7 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: "http://158.23.80.110:3000/api"
+      VITE_API_URL: "http://localhost:3000/api"
 
 volumes:
   db_data:

@@ -42,7 +42,7 @@ const Home = () => {
         body {
           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           color: #2e4d25;
-          background-image: url("public/Images/4.png");
+          background-image: url("Images/4.png");
           background-repeat: no-repeat;
           background-size: 110% 100%; /* Imagen más grande y alta */
           background-position: center;
