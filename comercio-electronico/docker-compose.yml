@@ -1,14 +1,12 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nombre_bd
     ports:
       - "5432:5432"
     volumes:
@@ -21,9 +19,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
-      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: "postgresql://usuario:password@db:5432/nombre_bd?schema=public"
+      JWT_SECRET: "clave_super_segura_para_tokens"
+      NODE_ENV: "production"
     depends_on:
       - db
     command: ["npm", "run", "dev"]
