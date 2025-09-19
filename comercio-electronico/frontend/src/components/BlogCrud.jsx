@@ -1,8 +1,7 @@
+// src/components/BlogCrud.jsx
 import React, { useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:3000/api/blogs';
-
-const BlogCrud = () => {
+const BlogCrud = ({ currentUserId }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -12,15 +11,17 @@ const BlogCrud = () => {
 
   const token = localStorage.getItem('token');
 
-  // Fetch all blogs
   const fetchBlogs = async () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch('http://localhost:3000/api/blogs', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) throw new Error('Error cargando historias');
       const data = await res.json();
-      setBlogs(data);
+      const userBlogs = data.filter(b => b.userId === currentUserId);
+      setBlogs(userBlogs);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -32,16 +33,12 @@ const BlogCrud = () => {
     fetchBlogs();
   }, []);
 
-  // Delete blog
   const handleDelete = async (id) => {
     if (!window.confirm('¿Seguro que quieres eliminar esta historia?')) return;
-
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetch(`http://localhost:3000/api/blogs/${id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
         const errData = await res.json();
@@ -53,25 +50,22 @@ const BlogCrud = () => {
     }
   };
 
-  // Open edit/create form
   const openForm = (blog = null) => {
     setEditingBlog(blog);
     setShowForm(true);
   };
 
-  // Close form
   const closeForm = () => {
     setEditingBlog(null);
     setShowForm(false);
   };
 
-  // Submit form (create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const title = form.title.value.trim();
     const description = form.description.value.trim();
-    const imageUrl = form.imageUrl.value.trim();
+    const imageUrl = form.imageUrl.value; // sin restricción
 
     if (!title || !description) {
       alert('Título y descripción son obligatorios');
@@ -80,7 +74,9 @@ const BlogCrud = () => {
 
     try {
       const method = editingBlog ? 'PUT' : 'POST';
-      const url = editingBlog ? `${API_URL}/${editingBlog.id}` : API_URL;
+      const url = editingBlog
+        ? `http://localhost:3000/api/blogs/${editingBlog.id}`
+        : 'http://localhost:3000/api/blogs';
 
       const res = await fetch(url, {
         method,
@@ -97,11 +93,10 @@ const BlogCrud = () => {
       }
 
       const savedBlog = await res.json();
-
       if (editingBlog) {
         setBlogs(blogs.map(b => (b.id === savedBlog.id ? savedBlog : b)));
       } else {
-        setBlogs([...blogs, savedBlog]);
+        setBlogs([savedBlog, ...blogs]);
       }
 
       closeForm();
@@ -111,104 +106,53 @@ const BlogCrud = () => {
   };
 
   return (
-    <div className="container p-3">
-      <h2 className="mb-3">Gestión de Historias</h2>
-
-
+    <div>
       {loading && <p>Cargando historias...</p>}
       {error && <p className="text-danger">{error}</p>}
 
-      {!loading && !error && (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th className="text-end">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {blogs.map(blog => (
-              <tr key={blog.id}>
-                <td>{blog.title}</td>
-                <td className="text-end">
-                  <button
-                    className="btn btn-sm btn-info me-2"
-                    onClick={() => setViewBlog(blog)}
-                  >
-                    Ver
-                  </button>
-                  <button
-                    className="btn btn-sm btn-warning me-2"
-                    onClick={() => openForm(blog)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDelete(blog.id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {blogs.length === 0 && (
-              <tr>
-                <td colSpan={2} className="text-center text-muted">
-                  No hay historias disponibles.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
+      <div className="row g-3">
+        {blogs.map(blog => (
+          <div key={blog.id} className="col-12 col-md-6">
+            <div className="card h-100">
+              {blog.imageUrl && <img src={blog.imageUrl} className="card-img-top" alt={blog.title} />}
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title">{blog.title}</h5>
+                <p className="card-text text-truncate" style={{ maxHeight: '4.5em' }}>{blog.description}</p>
+                <div className="mt-auto d-flex justify-content-end gap-2">
+                  <button className="btn btn-sm btn-info" onClick={() => setViewBlog(blog)}>Ver</button>
+                  <button className="btn btn-sm btn-warning" onClick={() => openForm(blog)}>Editar</button>
+                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(blog.id)}>Eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        {blogs.length === 0 && !loading && (
+          <p className="text-center text-muted mt-3">No hay historias disponibles.</p>
+        )}
+      </div>
 
-      {/* Modal para Crear/Editar */}
+      {/* Modal Crear/Editar */}
       {showForm && (
-        <div className="modal d-block" tabIndex="-1" role="dialog" style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
-          <div className="modal-dialog" role="document">
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
             <form className="modal-content" onSubmit={handleSubmit}>
               <div className="modal-header">
                 <h5 className="modal-title">{editingBlog ? 'Editar Historia' : 'Crear Historia'}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={closeForm}
-                  aria-label="Cerrar"
-                ></button>
+                <button type="button" className="btn-close" onClick={closeForm}></button>
               </div>
               <div className="modal-body">
                 <div className="mb-3">
                   <label htmlFor="title" className="form-label">Título</label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    className="form-control"
-                    defaultValue={editingBlog?.title || ''}
-                    required
-                  />
+                  <input type="text" id="title" name="title" className="form-control" defaultValue={editingBlog?.title || ''} required />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="description" className="form-label">Descripción</label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    className="form-control"
-                    rows={4}
-                    defaultValue={editingBlog?.description || ''}
-                    required
-                  />
+                  <textarea id="description" name="description" className="form-control" rows={4} defaultValue={editingBlog?.description || ''} required />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="imageUrl" className="form-label">URL de la Imagen</label>
-                  <input
-                    type="text"
-                    id="imageUrl"
-                    name="imageUrl"
-                    className="form-control"
-                    defaultValue={editingBlog?.imageUrl || ''}
-                  />
+                  <input type="text" id="imageUrl" name="imageUrl" className="form-control" defaultValue={editingBlog?.imageUrl || ''} />
                 </div>
               </div>
               <div className="modal-footer">
@@ -220,38 +164,21 @@ const BlogCrud = () => {
         </div>
       )}
 
-      {/* Modal para Ver Blog */}
+      {/* Modal Ver Blog */}
       {viewBlog && (
-        <div className="modal d-block" tabIndex="-1" role="dialog" style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
-          <div className="modal-dialog modal-lg" role="document">
+        <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">{viewBlog.title}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setViewBlog(null)}
-                  aria-label="Cerrar"
-                ></button>
+                <button type="button" className="btn-close" onClick={() => setViewBlog(null)}></button>
               </div>
               <div className="modal-body">
-                {viewBlog.imageUrl && (
-                  <img
-                    src={viewBlog.imageUrl}
-                    alt={viewBlog.title}
-                    className="img-fluid mb-3 rounded"
-                  />
-                )}
+                {viewBlog.imageUrl && <img src={viewBlog.imageUrl} className="img-fluid mb-3 rounded" alt={viewBlog.title} />}
                 <p style={{ whiteSpace: 'pre-wrap' }}>{viewBlog.description}</p>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setViewBlog(null)}
-                >
-                  Cerrar
-                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setViewBlog(null)}>Cerrar</button>
               </div>
             </div>
           </div>

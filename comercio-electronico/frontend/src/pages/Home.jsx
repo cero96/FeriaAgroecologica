@@ -3,9 +3,11 @@ import axios from "axios";
 import { useCart } from "../context/CartContext";
 import ProductCard from "../components/ProductCard";
 import AddToCartModal from "../components/AddToCartModal";
+import SearchBar from "../components/SearchBar"; // asegúrate de que la ruta es correcta
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
+  const [search, setSearch] = useState(""); // estado para la búsqueda
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { addToCart } = useCart();
 
@@ -24,11 +26,15 @@ const Home = () => {
     setSelectedProduct(null);
   };
 
-  // Aquí está la corrección: pasamos el objeto con la cantidad incluida
   const handleConfirmAdd = (quantity) => {
     addToCart({ ...selectedProduct, quantity });
     setSelectedProduct(null);
   };
+
+  // Filtrar productos según búsqueda
+  const filteredProducts = productos.filter((prod) =>
+    prod.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <>
@@ -44,10 +50,10 @@ const Home = () => {
           color: #2e4d25;
           background-image: url("Images/4.png");
           background-repeat: no-repeat;
-          background-size: 110% 100%; /* Imagen más grande y alta */
+          background-size: 110% 100%;
           background-position: center;
           animation: moveBg 20s ease-in-out infinite alternate;
-          background-color: #fff; /* Fondo de respaldo */
+          background-color: #fff;
           background-attachment: fixed;
         }
 
@@ -96,7 +102,12 @@ const Home = () => {
           border-radius: 16px;
           position: relative;
           z-index: 1;
-          text-align: center;
+        }
+
+        .search-wrapper {
+          display: flex;
+          justify-content: flex-start;
+          margin-bottom: 2rem;
         }
 
         .grid {
@@ -138,14 +149,16 @@ const Home = () => {
       </div>
 
       {/* Catálogo */}
-      <div
-        className="container"
-        role="main"
-        aria-label="Catálogo de productos agroecológicos"
-      >
+      <div className="container" role="main" aria-label="Catálogo de productos agroecológicos">
+        {/* Barra de búsqueda arriba a la izquierda */}
+        <div className="search-wrapper">
+          <SearchBar search={search} setSearch={setSearch} />
+        </div>
+
+        {/* Grid de productos */}
         <div className="grid">
-          {productos.length === 0 && <p>No hay productos disponibles.</p>}
-          {productos.map((prod) => (
+          {filteredProducts.length === 0 && <p>No se encontraron productos.</p>}
+          {filteredProducts.map((prod) => (
             <ProductCard key={prod.id} product={prod} onAdd={handleOpenModal} />
           ))}
         </div>

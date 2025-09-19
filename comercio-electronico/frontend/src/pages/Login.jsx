@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Particule from '../components/Particule.jsx'; // Ajusta la ruta según tu estructura
+import { Eye, EyeOff } from 'lucide-react'; // Iconos bonitos
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -14,7 +16,7 @@ export default function Login() {
     e.preventDefault();
 
     if (!form.email || !form.password) {
-      setMessage('Por favor complete todos los campos');
+      setMessage('⚠️ Por favor complete todos los campos');
       return;
     }
 
@@ -35,15 +37,15 @@ export default function Login() {
         localStorage.setItem('role', data.role);
         localStorage.setItem('tenantId', data.tenantId);
         localStorage.setItem('userId', data.userId);
-        setMessage('Inicio de sesión exitoso');
+        setMessage('✅ Inicio de sesión exitoso');
         setTimeout(() => {
           navigate('/dashboard');
         }, 1000);
       } else {
-        setMessage(data.message || 'Credenciales incorrectas');
+        setMessage(data.message || '❌ Credenciales incorrectas');
       }
     } catch (err) {
-      setMessage('Error al conectar con el servidor');
+      setMessage('❌ Error al conectar con el servidor');
       console.error(err);
     }
   };
@@ -85,16 +87,28 @@ export default function Login() {
               autoComplete="username"
               required
             />
-            <input
-              type="password"
-              name="password"
-              placeholder="Contraseña"
-              className="form-control mb-3"
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="current-password"
-              required
-            />
+
+            <div className="input-group mb-3">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="Contraseña"
+                className="form-control"
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
             <button
               type="submit"
               className="btn btn-success w-100"
@@ -103,8 +117,18 @@ export default function Login() {
               Iniciar sesión
             </button>
           </form>
+
           {message && (
-            <div className="alert alert-warning mt-3" role="alert">
+            <div
+              className={`alert mt-3 ${
+                message.includes('✅')
+                  ? 'alert-success'
+                  : message.includes('⚠️')
+                  ? 'alert-warning'
+                  : 'alert-danger'
+              }`}
+              role="alert"
+            >
               {message}
             </div>
           )}
